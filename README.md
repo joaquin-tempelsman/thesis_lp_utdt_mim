@@ -23,3 +23,9 @@ The main source of data will be the reports prepared by the company semi-annuall
 The methodology will consist of using past decisions and their results as benchmarks. We will model one or more of these periods and compare the performance per hectare, thus achieving a validation scheme for the solution. The metric we will seek to improve is the net profit obtained per hectare compared to the benchmark of previous years.
 
 After optimization, a potential sensitivity analysis and feasibility of the results will be added, particularly considering the impact of changes in climate and commercial and export policy regulations.
+
+### Project key files 
+[Zimpl script](https://github.com/joaquin-tempelsman/thesis_lp_utdt_mim/blob/main/modelo.zpl)
+[Utilitary notebook to build model inputs](https://github.com/joaquin-tempelsman/thesis_lp_utdt_mim/blob/main/build_inputs.ipynb)
+[EDA noteboook of model outputs](https://github.com/joaquin-tempelsman/thesis_lp_utdt_mim/blob/main/read_log.ipynb)
+

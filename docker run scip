@@ -1,0 +1,3 @@
+docker run --rm -v $PWD:/jupyter --name scipTeach -d scipoptsuite/scipoptsuite:7.0.2-teach
+docker exec scipTeach scip -f lot-sizing.zpl -l logs.log
+sudo docker exec scipTeach scip -f modelos/mod_0.09/modelo.zpl -l modelos/mod_0.09/log.log

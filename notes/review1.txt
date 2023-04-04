@@ -1,0 +1,26 @@
+Análisis
+
+clases: 3 
+años modelo: 1.6666666666666667 años 
+meses vida max: 120 meses, 10 años
+ventas max por mes 100
+fecha_inicio = '30/06/2020'
+
+stock inicial
+1      4.0
+2    259.0
+3    615.0
+
+Transpasos
+Entre el período 0 y el 5, toda la clase 2 se transpasa a clase 3
+En el último período toda la clase 2 es transpasada a clase 3 (asumo para ser vendida porq clase 2 no tiene precio todo el año y clase 3 si aunque más bajo)
+
+Nacimientos
+En t8 y t16 nacen 293 machos y 293 hembras. BUG: modelo generan nacimientos vacas desde 24 meses en adelante inclusive, la restriccion pide mayores a 24.
+PENDING: ver porque la segunda vez nacen exactamente la misma cantidad...
+
+Ventas
+La clase 1 obtenida en nacimientos se vende en edad 0, PENDING: Ver porque.
+Algunos clase 1 se venden en otros períodos a edad 21 y 22 en dos tandas, la primer tanda, porque no espero a madurar más?
+
+Ahora hay costos muy bajos, no deberian impactar, los aumentos de precios en pesos período a período (por estar dolarizados VALIDAR)

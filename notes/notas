@@ -1,0 +1,65 @@
+docker run --rm -v $PWD:/jupyter --name scipTeach -d -p 9001:9001 scipoptsuite/scipoptsuite:7.0.2-teach
+docker exec scipTeach scip -f lot-sizing.zpl -l logs.log
+scipTeach_hungry
+
+1 Conclusion: Cuando el animal llega a la semana máxima de vida, ese mismo período se vende y no el siguiente.
+
+Stock: 	0-2-1 = 1
+	1-0-1 = 49
+
+
+2 Pregunta: hay manera de ver el valor que los parámetros como "w" esta tomando periodo
+A periodo?
+	
+3 Bug: si descuento la variable de traspasos
+La clase 2 crece en stock libremente, probe limitar la
+W a solamente positiva o inclusive a 0 pero aun así no 
+Logro normalizar el comportamiento.
+
+SOLUCION: Sumo esta restricción.
+# No hay transpasos en el periodo inicial
+subto sintranspasosiniciales: forall <e> in E:
+    w[0,e] == 0;
+
+4 Bug: la restriction de flujo no esta funcionando para la semana 0 de vida
+Entonces cuando le conviene, aparecen animales de 0 semanas de vida en el stock
+RESOLVER!
+
+SOLUCION: Sumo esta restricción y agrego valores de precio, costo y stock inicial para e=-1
+# No hay stock en edad negativa. Sino este caso queda por fuera de la reestriccion
+# de flujo y toma el valor maximo posible. También hice un cambio a la restricciónes de flujo
+ De todas las clases a with e >= 0: 
+subto no_stock_edad_neg: forall <t,c> in T*C:
+    x[t,-1,c] == 0;
+
+-----------------------------------------------------------------
+
+- ESTUDAR - REVISAR: traspaso_liga_diff_stock_ventas 
+
+- ESTUDIAR q quiere decir la logica de estas lineas 
+var x[(T union {0}) * E * C] >= 0; # Esto ya especifica las restricciones de no negatividad
+
+
+- REVISAR porque no puedo activar esta restricción para evitar traspasos
+En periodo 0 sin que me bloquee los traspasos en general.
+
+# No hay transpasos en el periodo inicial
+#subto sintranspasosiniciales: forall <e> in E:
+#    w[0,e] == 0;
+
+---------------------------------------------------------------
+
+Pasaje a Clase 3, mínimo 2 años de edad.
+
+Restricciones Clase 1 y 2
+Momento de venta destete 6 meses - 24 semanas
+Momento de venta 1 16.5 meses  - 66 semanas
+Momento de venta 2 21.5 meses - 86 semanas
+Edad máxima clase 1 y 2, 21.5 meses - 86 semanas
+
+Nacimientos
+Según la cantidad de Clase 3 que tengas en agosto tenes
+0.5 nacimientos hombre
+0.5 nacimientos hembra
+
+Mes 11 - 44 semanas - 92 semanas - etc +48 

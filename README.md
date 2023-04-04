@@ -25,7 +25,7 @@ The methodology will consist of using past decisions and their results as benchm
 After optimization, a potential sensitivity analysis and feasibility of the results will be added, particularly considering the impact of changes in climate and commercial and export policy regulations.
 
 ### Project key files 
-[Zimpl script](https://github.com/joaquin-tempelsman/thesis_lp_utdt_mim/blob/main/modelo.zpl)
-[Utilitary notebook to build model inputs](https://github.com/joaquin-tempelsman/thesis_lp_utdt_mim/blob/main/build_inputs.ipynb)
-[EDA noteboook of model outputs](https://github.com/joaquin-tempelsman/thesis_lp_utdt_mim/blob/main/read_log.ipynb)
+[Zimpl script](https://github.com/joaquin-tempelsman/thesis_lp_utdt_mim/blob/main/modelo.zpl)  
+[Utilitary notebook to build model inputs](https://github.com/joaquin-tempelsman/thesis_lp_utdt_mim/blob/main/build_inputs.ipynb)  
+[EDA noteboook of model outputs](https://github.com/joaquin-tempelsman/thesis_lp_utdt_mim/blob/main/read_log.ipynb)  
 

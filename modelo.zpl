@@ -1,28 +1,28 @@
 #####----------- PARAMETROS -----------######
 
 # Meses de duracion del ejercicio
-param Tiempo := read "parametros.dat" as "2n" skip 1 use 1;
+param max_time := read "model_inputs/parametros.dat" as "2n" skip 1 use 1;
 
 # vida maxima permitida de los animales
-param vida_animal := read "parametros.dat" as "2n" skip 2 use 1;
+param animal_max_age := read "model_inputs/parametros.dat" as "2n" skip 2 use 1;
 
 # ventas max por mes
-param vida_animal := read "parametros.dat" as "2n" skip 3 use 1;
+param max_sell_qty_monthly := read "model_inputs/parametros.dat" as "2n" skip 3 use 1;
 
 # meses posibles donde hay nacimientos
-set meses_agosto_si := { read "agosto_si.dat" as "<1n>"};
+set meses_agosto_si := { read "model_inputs/agosto_si.dat" as "<1n>"};
 
 # meses donde no hay nacimientos
-set meses_agosto_no := { read "agosto_no.dat" as "<1n>"};
+set meses_agosto_no := { read "model_inputs/agosto_no.dat" as "<1n>"};
 
 # meses venta no posible c1 c2
-set set_meses_vta_no_posible_c1_c2 := { read "momentos_venta_no_posible_c1_c2.dat" as "<1n>"};
+set set_meses_vta_no_posible_c1_c2 := { read "model_inputs/momentos_venta_no_posible_c1_c2.dat" as "<1n>"};
 
 # Conjunto de periodos
-set T := { 1 .. Tiempo };
+set T := { 1 .. max_time };
 
 # meses que puede tener un animal
-set E := { -1 .. vida_animal };
+set E := { -1 .. animal_max_age };
 
 # clase del animal
 set C := { 1, 2, 3};
@@ -31,15 +31,15 @@ set C := { 1, 2, 3};
 param k := 1;
 
 # costo de los animales, en cada t,e,c
- param costo[T*E*C] := read "costos.dat" as "<1n,2n,3n> 4n";
+ param costo[T*E*C] := read "model_inputs/costos.dat" as "<1n,2n,3n> 4n";
 
 # precio de los animales en cada periodo para cada genero
-param precio[T*E*C] := read "precios.dat" as "<1n,2n,3n> 4n";
+param precio[T*E*C] := read "model_inputs/precios.dat" as "<1n,2n,3n> 4n";
 
 #do forall <t,e,c> in T*E*C with t == 24 and c == 1 and e > 22 and e < 25: print t, " ", e, " ", c, " ", precio[t,e,c];
 
 # stock inicial para el periodo 0 
-param stock_inicial[E*C] := read "stock_inicial.dat" as "<1n,2n> 3n";
+param stock_inicial[E*C] := read "model_inputs/stock_inicial.dat" as "<1n,2n> 3n";
 
 #####----------- DEFINICION VARIABLES -----------#####
 
@@ -60,6 +60,7 @@ var n[(T union {0}) * C] >= 0; # Esto ya especifica las restricciones de no nega
 
 # Funcion objetivo
 maximize fobj: sum <t,e,c> in T*E*C: (y[t,e,c] * precio[t,e,c] - x[t,e,c] * costo[t,e,c]);
+#maximize fobj: sum <t,e,c> in T*E*C: (y[t,e,c] * precio[t,e,c] - x[t,e,c]);
 
 
 #####----------- RESTRICCIONES -----------#####
@@ -85,7 +86,7 @@ subto eq_flujo_sem_cero: forall <t,c> in T*C with t > 0 and c != 3:
 
 #Restricción venta maxima por periodo 
 #subto ventamax: forall <t> in T:
-#    sum <e,c> in E*C: y[t,e,c] <= ventas_max_mes;
+#    sum <e,c> in E*C: y[t,e,c] <= max_sell_qty_monthly;
 
 # No hay ventas en el periodo inicial
 subto sinventasiniciales: forall <e,c> in E*C:
@@ -97,8 +98,12 @@ subto ventas_liga_stock: forall <t,e,c> in T*E*C:
 
 #version manual que si funciona
 #subto meses_venta_posible_c1_c2: forall    <t,e,c> in T*E*C with c != 3 and e !=7 and e !=9 and e !=12: NO RUN
-subto periodos_venta_posible_c1_c2: forall <t,e,c> in T*(E\set_meses_vta_no_posible_c1_c2)*C with c != 3:
+subto periodos_venta_no_posible_c1_c2: forall <t,e,c> in T*(E\set_meses_vta_no_posible_c1_c2)*C with c != 3:
     y[t,e,c] == 0;
+
+# ! DUPLICATED FROM ABOVE RESTRICTION. WE GOT SALES IN 0 AGE THIS CATCHES THIS. VERIFY WHY
+#subto periodos_venta_no_posible_c1_c2b: forall <t,c> in T*C with c != 3:
+#    y[t,0,c] == 0;
 
 
 ########## - STOCK - ##########

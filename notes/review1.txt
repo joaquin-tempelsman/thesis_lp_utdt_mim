@@ -24,3 +24,16 @@ La clase 1 obtenida en nacimientos se vende en edad 0, PENDING: Ver porque.
 Algunos clase 1 se venden en otros períodos a edad 21 y 22 en dos tandas, la primer tanda, porque no espero a madurar más?
 
 Ahora hay costos muy bajos, no deberian impactar, los aumentos de precios en pesos período a período (por estar dolarizados VALIDAR)
+
+-- nuevas conclusiones
+a)Se estaban vendiendo C1 y C2 de 0 meses, la restriccion no estaba funcionando bien
+agregue una segunda restriccion que logra el objetivo
+
+b)no consigo que se vendan los C1 y C2 que nacen en t8 a los 6,7 u 8... no hay ventas pq!
+    t14 e6 c1, tienen precio en precios.dat (ok)
+    costo 0 (tambien probe sacar el costo de la funcion objetivo)
+    
+
+c) si yo no pongo costo durante la vida y solo al vender el animal, estoy permitiendo acumulacion
+de stock libre total sino lo vendo no lo pago (el costo), eso puede dar lugar a deformaciones?
+    

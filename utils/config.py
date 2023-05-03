@@ -57,7 +57,7 @@ PATHS = {
     "agosto_si": "model_inputs/agosto_si.dat",
     "agosto_no": "model_inputs/agosto_no.dat",
     "costos": "model_inputs/costos.dat",
-    "momentos_venta_no_posible_c1_c2": "model_inputs/momentos_venta_no_posible_c1_c2.dat",
+    "momentos_venta_SI_c1_c2": "model_inputs/momentos_venta_SI_c1_c2.dat",
     "precios": "model_inputs/precios.dat",
     "stock_inicial": "model_inputs/stock_inicial.dat",
 }

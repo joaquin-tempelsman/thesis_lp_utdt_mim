@@ -330,13 +330,13 @@ def write_params_file(PATHS, PARAMS, SALES_PERIODS):
                 f_no.write(f"{semanas}\n")
 
     # Write sale periods data to file
-    with open(PATHS["momentos_venta_no_posible_c1_c2"], "w") as f:
+    with open(PATHS["momentos_venta_SI_c1_c2"], "w") as f:
         venta_destete = SALES_PERIODS["venta_destete"]
         venta_novillo_vaquillona = SALES_PERIODS["venta_novillo_vaquillona"]
         venta_pesados = SALES_PERIODS["venta_pesados"]
         venta_all = venta_destete + venta_novillo_vaquillona + venta_pesados
         for mes in [
-            x for x in range(0, PARAMS["meses_max_animales"]) if x not in venta_all
+            x for x in range(0, PARAMS["meses_max_animales"]) if x in venta_all
         ]:
             f.write(f"{mes}\n")
 

@@ -16,7 +16,8 @@ set meses_agosto_si := { read "model_inputs/agosto_si.dat" as "<1n>"};
 set meses_agosto_no := { read "model_inputs/agosto_no.dat" as "<1n>"};
 
 # meses venta no posible c1 c2
-set set_meses_vta_no_posible_c1_c2 := { read "model_inputs/momentos_venta_no_posible_c1_c2.dat" as "<1n>"};
+set momentos_venta_SI_c1_c2 := { read "model_inputs/momentos_venta_SI_c1_c2.dat" as "<1n>"};
+
 
 # Conjunto de periodos
 set T := { 1 .. max_time };
@@ -98,7 +99,7 @@ subto ventas_liga_stock: forall <t,e,c> in T*E*C:
 
 #version manual que si funciona
 #subto meses_venta_posible_c1_c2: forall    <t,e,c> in T*E*C with c != 3 and e !=7 and e !=9 and e !=12: NO RUN
-subto periodos_venta_no_posible_c1_c2: forall <t,e,c> in T*(E\set_meses_vta_no_posible_c1_c2)*C with c != 3:
+subto periodos_venta_no_posible_c1_c2: forall <t,e,c> in T*(E\momentos_venta_SI_c1_c2)*C with c != 3:
     y[t,e,c] == 0;
 
 # ! DUPLICATED FROM ABOVE RESTRICTION. WE GOT SALES IN 0 AGE THIS CATCHES THIS. VERIFY WHY

@@ -8,6 +8,10 @@ from datetime import datetime
 from matplotlib import pyplot as plt
 from skfda.representation.interpolation import SplineInterpolation
 from skfda.representation.grid import FDataGrid
+import itertools
+
+from preprocessing.DolarNormalizer import DolarNormalizer
+
 
 
 def write_line_to_file(path, line):
@@ -206,23 +210,23 @@ def precios_scrapped_to_dat(
             # destete
             if edad_animal in [6, 7, 8]:
                 if clase == 1:
-                    precio = int(row["VAQUILLONAS270"]) * peso_prom_destete * 1.15
+                    precio = float(row["VAQUILLONAS270"]) * peso_prom_destete * 1.15
                 if clase == 2:
-                    precio = int(row["NOVILLITOS300"]) * peso_prom_destete * 1.15
+                    precio = float(row["NOVILLITOS300"]) * peso_prom_destete * 1.15
 
             # momento 1 16.5 meses
             elif edad_animal in [16, 17, 18]:
                 if clase == 1:
-                    precio = int(row["VAQUILLONAS270"]) * peso_prom_vaquillonas
+                    precio = float(row["VAQUILLONAS270"]) * peso_prom_vaquillonas
                 if clase == 2:
-                    precio = int(row["NOVILLITOS300"]) * peso_prom_novillitos
+                    precio = float(row["NOVILLITOS300"]) * peso_prom_novillitos
 
             # momento 2
             elif edad_animal in [30, 31, 32, 33, 34, 35, 36]:
                 if clase == 1:
-                    precio = int(row["VAQUILLONAS391"]) * peso_prom_vaquillonas_pesados
+                    precio = float(row["VAQUILLONAS391"]) * peso_prom_vaquillonas_pesados
                 if clase == 2:
-                    precio = int(row["NOVILLITOS391"]) * peso_prom_novillos_pesados
+                    precio = float(row["NOVILLITOS391"]) * peso_prom_novillos_pesados
 
             else:
                 precio = 0
@@ -297,15 +301,7 @@ def get_precios_del_periodo(periodo, df_precios):
 
     return precios_periodo
 
-
-import os
-import itertools
-import math
-import pandas as pd
-from utils.build_data_modules import get_precios_del_periodo
-
-
-def delete_files(file_paths):
+def clear_model_inputs(file_paths):
     for file in file_paths.values():
         if os.path.exists(file):
             os.remove(file)
@@ -467,3 +463,113 @@ def costs_to_dat_realistic(Interpolator, PATHS, PARAMS):
             valores = [periodo, edad_animal, clase, int(costo), "\n"]
             line = "\t".join(str(x) for x in valores)
             f.write(line)
+
+
+
+def delete_files(file_paths):
+    for file in file_paths.values():
+        if os.path.exists(file):
+            os.remove(file)
+
+
+def write_params_file(PATHS, PARAMS, SALES_PERIODS):
+    # Write parameters to file
+    with open(PATHS["parameters"], "w") as f:
+        f.write("model params\n")
+        f.write(f"max_periods {PARAMS['periodos_modelo']}\n")
+        f.write(f"max_age_allowed {PARAMS['meses_max_animales']}\n")
+        f.write(f"max_sell_qty_monthly {PARAMS['ventas_max_por_mes']}\n")
+
+    # Write August birth data to file
+    with open(PATHS["agosto_si"], "w") as f_yes, open(PATHS["agosto_no"], "w") as f_no:
+        num = 8
+        for semanas in range(PARAMS["periodos_modelo"] + 1):
+            if semanas % num == 0:
+                f_yes.write(f"{semanas}\n")
+                num += 8
+            else:
+                f_no.write(f"{semanas}\n")
+
+    # Write sale periods data to file
+    with open(PATHS["momentos_venta_SI_c1_c2"], "w") as f:
+        venta_destete = SALES_PERIODS["venta_destete"]
+        venta_novillo_vaquillona = SALES_PERIODS["venta_novillo_vaquillona"]
+        venta_pesados = SALES_PERIODS["venta_pesados"]
+        venta_all = venta_destete + venta_novillo_vaquillona + venta_pesados
+        for mes in [
+            x for x in range(0, PARAMS["meses_max_animales"]) if x in venta_all
+        ]:
+            f.write(f"{mes}\n")
+
+
+def write_costs_file_test(PATHS, periodos_modelo, meses_max_animales, clases):
+    collect_costos = []
+
+    with open(PATHS["costos"], "w") as f:
+        for periodo, edad_animal, clase in itertools.product(
+            range(1, periodos_modelo + 1),
+            range(-1, meses_max_animales + 1),
+            range(1, clases + 1),
+        ):
+            # a mayor edad del animal, el impacto es positivo pero decreciente en funcion del tiempo
+            # a medida que avanzan los periodos, es menos costoso mantener a un animal
+            costo = 1 + edad_animal * 0.25
+
+            if math.isinf(costo) | math.isnan(costo):
+                costo = 1
+            # else:
+            if clase == 3:
+                costo = 0
+
+            # ! WARNING 
+            costo = 0
+            valores = [periodo, edad_animal, clase, costo, "\n"]
+            line = "\t".join(str(x) for x in valores)
+            f.write(line)
+
+            # plot costos
+            collect_costos.append(
+                {
+                    "periodo": periodo,
+                    "costo": costo,
+                    "edad": edad_animal,
+                    "clase": clase,
+                }
+            )
+
+    df_costos = pd.DataFrame(collect_costos)
+
+    return df_costos
+
+
+def calculate_daily_sales(df_ventas, df_precios):
+    for index, row in df_ventas.iterrows():
+        precios = get_precios_del_periodo(row.FECHA, df_precios)
+        sub_tot_VAQUILLONAS270 = row["VAQUILLONAS270"] * precios["VAQUILLONAS270"]
+        sub_tot_NOVILLITOS391 = row["NOVILLITOS391"] * precios["NOVILLITOS391"]
+        sub_tot_NOVILLITOS300 = row["NOVILLITOS300"] * precios["NOVILLITOS300"]
+        # sub_tot_VACAS = row['VACAS'] * precios['VACAS']
+        # sub_tot_TOROS = row['TOROS'] * precios['TOROS']
+        # sub_tot_TERNEROS_DESTETE = row['TERNEROS_DESTETE'] * precios['TERNEROS_DESTETE']
+        # sub_tot_TERNERAS_DESTETE = row['TERNERAS_DESTETE'] * precios['TERNERAS_DESTETE']
+        VENTA_TOT_DIA = (
+            sub_tot_VAQUILLONAS270
+            + sub_tot_NOVILLITOS391
+            + sub_tot_NOVILLITOS300
+            #    sub_tot_VACAS +
+            #    sub_tot_TOROS +
+            #    sub_tot_TERNEROS_DESTETE +
+            #    sub_tot_TERNERAS_DESTETE
+        )
+        df_ventas.loc[index, "VENTA_PESOS"] = VENTA_TOT_DIA
+
+    return df_ventas
+
+def prices_to_usd_b(df_prices_ars, usd_b_path, cols_to_normalize):
+    dln = DolarNormalizer(usd_b_path)
+
+    df_prices_ars['usd_b'] = df_prices_ars.apply(lambda x: dln.mean_last_n_days(x['PERIODO_INICIO'], 7), axis=1)
+    
+    df_prices_ars[cols_to_normalize] = df_prices_ars[cols_to_normalize].div(df_prices_ars['usd_b'], axis=0)
+
+    return df_prices_ars

@@ -10,7 +10,7 @@ class DolarNormalizer:
         to_date = pd.to_datetime(date)
         from_date = to_date - pd.Timedelta(days=n-1)
         df_slice = self.df[from_date:to_date]
-        mean = df_slice['avg'].mean()
+        mean = df_slice['avg'].astype(int).mean()
         
         return mean
     

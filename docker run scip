@@ -1,5 +1,5 @@
 docker run --rm -v $PWD:/jupyter --name scipTeach -d scipoptsuite/scipoptsuite:7.0.2-teach
-docker exec scipTeach scip -f lot-sizing.zpl -l logs.log
 
 sudo docker exec scipTeach2 scip -f modelo.zpl -l log.logs
 
+python build_inputs.py && rm log.logs && sudo docker exec scipTeach2 scip -f modelo.zpl -l log.logs

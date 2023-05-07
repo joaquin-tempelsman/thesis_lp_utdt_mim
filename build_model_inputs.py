@@ -6,11 +6,16 @@ import warnings
 warnings.filterwarnings("ignore")
 
 COST_TEST = False
-INITIAL_STOCK_TEST = False
+INITIAL_STOCK_TEST = True
 
 clear_model_inputs(PATHS)
 
+## LP SETTINGS ##
+# [max_periods, max_age_allowed, max_sell_qty_monthlY, ...]
+
 write_params_file(PATHS, PARAMS, SALES_PERIODS)
+
+### COSTS ###
 
 if COST_TEST:
     df_cost_plot = costs_to_dat_test(
@@ -22,6 +27,7 @@ else:
     )
     costs_to_dat_realistic(costs_interpolator, PATHS, PARAMS)
 
+### PRICES ###
 
 df_precios = get_precios_scrapped(
     fecha_inicio=PARAMS["fecha_inicio"], input="data/scrapping_df3 - scrapping_df3.csv"
@@ -47,6 +53,8 @@ precios_scrapped_to_dat(
     fecha_inicio=PARAMS["fecha_inicio"],
 )
 
+### INITIAL STOCK ###
+
 if INITIAL_STOCK_TEST:
     get_stock_inicial_test(PARAMS, PATHS["stock_inicial"])
 
@@ -60,6 +68,8 @@ else:
         intervalos=intervalos_madurez,
     )
 
+
+### PROCESS BUSINESS SALES TO BUILD UP EXPERIMENT ###
 
 df_ventas = get_ventas_inicial_from_parte_diario(
     parte_diario_path="data/datos experimento tesis  - parte_diario completo.csv"

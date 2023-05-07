@@ -101,7 +101,7 @@ subto sinventasiniciales: forall <e,c> in E*C:
 subto ventas_liga_stock: forall <t,e,c> in T*E*C:
     y[t,e,c] <= x[t,e,c];
 
-#subto periodos_venta_no_posible_c1_c2: forall <t,e,c> in T*(E\momentos_venta_SI_c1_c2)*C with c != 3:
+#subto periodos_venta_no_posible_c1_c2: forall <t,e,c> in T*(E\momentos_venta_SI_c1_c2)*C with c != 3: # version anterior
 #    y[t,e,c] == 0;
 
 subto periodos_venta_no_posible_c1_c2: forall <t,e,c> in (T\{20})*(E\momentos_venta_SI_c1_c2)*C with c != 3:

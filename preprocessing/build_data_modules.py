@@ -445,14 +445,14 @@ def costs_to_dat_realistic(Interpolator, PATHS, PARAMS):
                 costo = Interpolator.evaluate(
                     derivative=1,
                     extrapolation="periodic",
-                    eval_points=[PARAMS['c1_c2_over_21']],
+                    eval_points=[PARAMS['c1_c2_over_21']], # max cost for c1 and c2
                 ).min()
 
             elif clase == 3:
                 costo = Interpolator.evaluate(
                     derivative=1,
                     extrapolation="periodic",
-                    eval_points=[PARAMS['costos_c3']],
+                    eval_points=[PARAMS['costos_c3']], # fix at a particular moment
                 ).min()
 
             else:
@@ -479,6 +479,10 @@ def write_params_file(PATHS, PARAMS, SALES_PERIODS):
         f.write(f"max_periods {PARAMS['periodos_modelo']}\n")
         f.write(f"max_age_allowed {PARAMS['meses_max_animales']}\n")
         f.write(f"max_sell_qty_monthly {PARAMS['ventas_max_por_mes']}\n")
+        f.write(f"sell_c1_c2_before {PARAMS['sell_c1_c2_before']}\n")
+
+ 
+
 
     # Write August birth data to file
     with open(PATHS["agosto_si"], "w") as f_yes, open(PATHS["agosto_no"], "w") as f_no:

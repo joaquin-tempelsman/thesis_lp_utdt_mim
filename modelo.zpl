@@ -9,7 +9,7 @@ param animal_max_age := read "model_inputs/parametros.dat" as "2n" skip 2 use 1;
 # ventas max por mes
 param max_sell_qty_monthly := read "model_inputs/parametros.dat" as "2n" skip 3 use 1;
 
-# vender c1 c2 antes de 'valor'
+# vender c1 c2 antes de X mes
 param sell_c1_c2_before := read "model_inputs/parametros.dat" as "2n" skip 4 use 1;
 
 
@@ -123,8 +123,8 @@ subto no_stock_edad_neg: forall <t,c> in T*C:
     x[t,-1,c] == 0;
 
 #Edad máxima clase 1 y 2, 21.5 meses - 86 semanas, se venden antes.
-subto edad_max_c1_c2: forall <t,e,c> in T*E*C with c != 3 and e > sell_c1_c2_before: 
-    x[t,e,c] == 0;
+#subto edad_max_c1_c2: forall <t,e,c> in T*E*C with c != 3 and e > sell_c1_c2_before: 
+#    x[t,e,c] == 0;
    
 
 ######## - TRANSPASOS - #######

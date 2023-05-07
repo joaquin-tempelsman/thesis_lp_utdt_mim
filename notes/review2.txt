@@ -1,0 +1,11 @@
+1)
+ver diferencia de precio mayor a 15 dias warnings
+
+2)
+sin solucion si stock inicial c1 c2 de 20 semanas o mas
+es mayor a 0
+
+step 1 modif periodos_venta_no_posible_c1_c2 > puedo vender en el ultimo periodo
+step 2 remove restriccion y que se maneje con precio 0 > el modelo no rompe nunca para c1 c2
+step 3 detecto problema si hay stock init c3 de 24 meses
+

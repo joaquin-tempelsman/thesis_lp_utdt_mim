@@ -9,6 +9,10 @@ param animal_max_age := read "model_inputs/parametros.dat" as "2n" skip 2 use 1;
 # ventas max por mes
 param max_sell_qty_monthly := read "model_inputs/parametros.dat" as "2n" skip 3 use 1;
 
+# vender c1 c2 antes de 'valor'
+param sell_c1_c2_before := read "model_inputs/parametros.dat" as "2n" skip 4 use 1;
+
+
 # meses posibles donde hay nacimientos
 set meses_agosto_si := { read "model_inputs/agosto_si.dat" as "<1n>"};
 
@@ -61,7 +65,7 @@ var n[(T union {0}) * C] >= 0; # Esto ya especifica las restricciones de no nega
 
 # Funcion objetivo
 maximize fobj: sum <t,e,c> in T*E*C: (y[t,e,c] * precio[t,e,c] - x[t,e,c] * costo[t,e,c]);
-#maximize fobj: sum <t,e,c> in T*E*C: (y[t,e,c] * precio[t,e,c] - x[t,e,c]);
+#maximize fobj: sum <t,e,c> in T*E*C: (y[t,e,c] * precio[t,e,c] - x[t,e,c]); #TESTING, NO COST
 
 
 #####----------- RESTRICCIONES -----------#####
@@ -97,14 +101,11 @@ subto sinventasiniciales: forall <e,c> in E*C:
 subto ventas_liga_stock: forall <t,e,c> in T*E*C:
     y[t,e,c] <= x[t,e,c];
 
-#version manual que si funciona
-#subto meses_venta_posible_c1_c2: forall    <t,e,c> in T*E*C with c != 3 and e !=7 and e !=9 and e !=12: NO RUN
-subto periodos_venta_no_posible_c1_c2: forall <t,e,c> in T*(E\momentos_venta_SI_c1_c2)*C with c != 3:
-    y[t,e,c] == 0;
+#subto periodos_venta_no_posible_c1_c2: forall <t,e,c> in T*(E\momentos_venta_SI_c1_c2)*C with c != 3:
+#    y[t,e,c] == 0;
 
-# ! DUPLICATED FROM ABOVE RESTRICTION. WE GOT SALES IN 0 AGE THIS CATCHES THIS. VERIFY WHY
-#subto periodos_venta_no_posible_c1_c2b: forall <t,c> in T*C with c != 3:
-#    y[t,0,c] == 0;
+subto periodos_venta_no_posible_c1_c2: forall <t,e,c> in (T\{20})*(E\momentos_venta_SI_c1_c2)*C with c != 3:
+    y[t,e,c] == 0;
 
 
 ########## - STOCK - ##########
@@ -122,7 +123,7 @@ subto no_stock_edad_neg: forall <t,c> in T*C:
     x[t,-1,c] == 0;
 
 #Edad máxima clase 1 y 2, 21.5 meses - 86 semanas, se venden antes.
-subto edad_max_c1_c2: forall <t,e,c> in T*E*C with c < 3 and e > 22: 
+subto edad_max_c1_c2: forall <t,e,c> in T*E*C with c != 3 and e > sell_c1_c2_before: 
     x[t,e,c] == 0;
    
 

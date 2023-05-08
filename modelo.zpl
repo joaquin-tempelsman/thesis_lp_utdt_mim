@@ -1,7 +1,7 @@
 #####----------- PARAMETROS -----------######
 
 # Meses de duracion del ejercicio
-param max_time := read "model_inputs/parametros.dat" as "2n" skip 1 use 1;
+param max_periods := read "model_inputs/parametros.dat" as "2n" skip 1 use 1;
 
 # vida maxima permitida de los animales
 param animal_max_age := read "model_inputs/parametros.dat" as "2n" skip 2 use 1;
@@ -24,7 +24,7 @@ set momentos_venta_SI_c1_c2 := { read "model_inputs/momentos_venta_SI_c1_c2.dat"
 
 
 # Conjunto de periodos
-set T := { 1 .. max_time };
+set T := { 1 .. max_periods };
 
 # meses que puede tener un animal
 set E := { -1 .. animal_max_age };
@@ -44,7 +44,7 @@ param precio[T*E*C] := read "model_inputs/precios.dat" as "<1n,2n,3n> 4n";
 #do forall <t,e,c> in T*E*C with t == 24 and c == 1 and e > 22 and e < 25: print t, " ", e, " ", c, " ", precio[t,e,c];
 
 # stock inicial para el periodo 0 
-param stock_inicial[E*C] := read "model_inputs/stock_inicial.dat" as "<1n,2n> 3n";
+param stock_inicial[E*C] := read "model_inputs/stock_inicial_test_no_work.dat" as "<1n,2n> 3n";
 
 #####----------- DEFINICION VARIABLES -----------#####
 
@@ -104,7 +104,7 @@ subto ventas_liga_stock: forall <t,e,c> in T*E*C:
 #subto periodos_venta_no_posible_c1_c2: forall <t,e,c> in T*(E\momentos_venta_SI_c1_c2)*C with c != 3: # version anterior
 #    y[t,e,c] == 0;
 
-subto periodos_venta_no_posible_c1_c2: forall <t,e,c> in (T\{max_periods})*(E\momentos_venta_SI_c1_c2)*C with c != 3:
+subto periodos_venta_no_posible_c1_c2: forall <t,e,c> in T*(E\momentos_venta_SI_c1_c2)*C with c != 3 and t != max_periods:
     y[t,e,c] == 0;
 
 

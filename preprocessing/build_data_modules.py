@@ -488,7 +488,7 @@ def write_params_file(PATHS, PARAMS, SALES_PERIODS):
     with open(PATHS["agosto_si"], "w") as f_yes, open(PATHS["agosto_no"], "w") as f_no:
         num = 8
         for semanas in range(PARAMS["periodos_modelo"] + 1):
-            if semanas % num == 0:
+            if semanas % num == 0 and semanas != 0:
                 f_yes.write(f"{semanas}\n")
                 num += 8
             else:

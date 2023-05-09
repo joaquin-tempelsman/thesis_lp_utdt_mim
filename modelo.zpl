@@ -44,7 +44,7 @@ param precio[T*E*C] := read "model_inputs/precios.dat" as "<1n,2n,3n> 4n";
 #do forall <t,e,c> in T*E*C with t == 24 and c == 1 and e > 22 and e < 25: print t, " ", e, " ", c, " ", precio[t,e,c];
 
 # stock inicial para el periodo 0 
-param stock_inicial[E*C] := read "model_inputs/stock_inicial_test_no_work.dat" as "<1n,2n> 3n";
+param stock_inicial[E*C] := read "model_inputs/stock_inicial.dat" as "<1n,2n> 3n";
 
 #####----------- DEFINICION VARIABLES -----------#####
 
@@ -101,9 +101,6 @@ subto sinventasiniciales: forall <e,c> in E*C:
 subto ventas_liga_stock: forall <t,e,c> in T*E*C:
     y[t,e,c] <= x[t,e,c];
 
-#subto periodos_venta_no_posible_c1_c2: forall <t,e,c> in T*(E\momentos_venta_SI_c1_c2)*C with c != 3: # version anterior
-#    y[t,e,c] == 0;
-
 subto periodos_venta_no_posible_c1_c2: forall <t,e,c> in T*(E\momentos_venta_SI_c1_c2)*C with c != 3 and t != max_periods:
     y[t,e,c] == 0;
 
@@ -137,8 +134,8 @@ subto traspaso_liga_diff_stock_ventas: forall <t,e> in T*E:
 subto sintranspasosiniciales: forall <e> in E:
    w[0,e] == 0;
 
-#Pasaje a Clase 3, mínimo 11 meses - 44 semanas.
-subto traspasos_min_2_anos_edad: forall <t,e> in T*E with e < 11:
+#Pasaje a Clase 3, estrictamente a los  11 meses
+subto traspasos_min_2_anos_edad: forall <t,e> in T*E with e !=11:
    w[t,e] == 0;
 
 

@@ -6,7 +6,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 COST_TEST = False
-INITIAL_STOCK_TEST = True
+INITIAL_STOCK_TEST = False
 
 clear_model_inputs(PATHS)
 

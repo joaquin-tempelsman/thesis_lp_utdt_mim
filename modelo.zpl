@@ -9,8 +9,11 @@ param animal_max_age := read "model_inputs/parametros.dat" as "2n" skip 2 use 1;
 # ventas max por mes
 param max_sell_qty_monthly := read "model_inputs/parametros.dat" as "2n" skip 3 use 1;
 
+# venta min por mes
+param venta_min := read "model_inputs/parametros.dat" as "2n" skip 4 use 1;
+
 # vender c1 c2 antes de X mes
-param sell_c1_c2_before := read "model_inputs/parametros.dat" as "2n" skip 4 use 1;
+param sell_c1_c2_before := read "model_inputs/parametros.dat" as "2n" skip 5 use 1;
 
 
 # meses posibles donde hay nacimientos
@@ -92,6 +95,15 @@ subto eq_flujo_sem_cero: forall <t,c> in T*C with t > 0 and c != 3:
 #Restricción venta maxima por periodo 
 #subto ventamax: forall <t> in T:
 #    sum <e,c> in E*C: y[t,e,c] <= max_sell_qty_monthly;
+
+
+# Variable binaria de ventas, v[t] vale 1 si hay ventas en el periodo t
+var s[T] binary;
+
+# venta minima si hay ventas, o cero si s[t] vale 0
+subto venta_minima: forall <t> in T:
+    sum <e,c> in E*C: y[t,e,c] * s[t] >= venta_min;
+
 
 # No hay ventas en el periodo inicial
 subto sinventasiniciales: forall <e,c> in E*C:

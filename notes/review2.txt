@@ -9,3 +9,25 @@ step 1 modif periodos_venta_no_posible_c1_c2 > puedo vender en el ultimo periodo
 step 2 remove restriccion y que se maneje con precio 0 > el modelo no rompe nunca para c1 c2
 step 3 detecto problema si hay stock init c3 de 24 meses
 
+## solucionado!, agosto_si tenia un 0, removemos.
+
+##### experiento 2019-2023
+
+precios scrapped desde = 31/01/2014,10/02/2014
+precios scrapped hasta = 31/05/2022,10/06/2022
+
+ventas  from abril 01 2019 00:00:00 
+ventas to enero 12 2023 00:00:00
+
+- y los nacimientos?, estan informados en el parte diario. Se inputan a la vez en nacimientos 10 y 6 orejano macho 4 orejano HEMBRAS
+por lo que lo estamos cuantificando
+- y los costos de negocio? los inputo dos veces, en el momento de la venta y a la liquidacion del stock
+
+### next steps
+
+4) variante extra fin del mundo
+5) iteration!
+
+idea: pensar que la idea es construir una SN y comparar en segundo lugar vs negocio de la forma
+mas realista posible con los supuestos en su lugar. el fin no es el experimento con 100% de comparabilidad
+en si sino la solucion

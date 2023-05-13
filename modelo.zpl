@@ -158,10 +158,10 @@ subto sin_nacimientos_iniciales: forall <c> in C:
 
 #nacen animales por cada c3 que tengas de mas de 2 años
 subto nacimientos_c1: forall <t> in meses_agosto_si:
-    n[t,1]   ==  sum <e> in E with e >= 24: x[t,e,3] / 2;
+    n[t,1]   ==  sum <e> in E with e >= 24: x[t,e,3] * 0.45;
 
 subto nacimientos_c2: forall <t> in meses_agosto_si:
-    n[t,2]   ==  sum <e> in E with e >= 24: x[t,e,3] / 2;
+    n[t,2]   ==  sum <e> in E with e >= 24: x[t,e,3] * 0.45;
 
 subto limite_nacimientos_c1_c2: forall <t,c> in meses_agosto_no*C:
     n[t,c]   ==  0;

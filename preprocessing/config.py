@@ -4,7 +4,7 @@ periodos_modelo = 20  # 1 año
 meses_max_animales = 12 * 10  # 10 años, impacta en reproductoras
 ventas_max_por_mes = 100
 ventas_min_por_mes = 10
-fecha_inicio = "01/04/2019"  # este valor se usa para tomar un stock inicial, y para pasar precios desde el periodo 0 a el final del modelo
+#fecha_inicio = "01/04/2019"  # este valor se usa para tomar un stock inicial, y para pasar precios desde el periodo 0 a el final del modelo
 fecha_parte_diario_inicio = "01/04/2019"
 sell_c1_c2_before = 37
 path_parte_diario = "data/datos experimento tesis  - parte_diario completo.csv"
@@ -47,6 +47,20 @@ intervalos_madurez = {
 
 indice_prenez = 0.9
 
+SALES_PERIODS = {
+    "venta_destete": VENTA_DESTETE,
+    "venta_novillo_vaquillona": VENTA_NOVILLO_VAQUILLONA,
+    "venta_pesados": VENTA_PESADOS,
+}
+
+PESOS_PROMEDIO = {
+    "peso_prom_destete": peso_prom_destete,
+    "peso_prom_vaquillonas": peso_prom_vaquillonas,
+    "peso_prom_novillitos": peso_prom_novillitos,
+    "peso_prom_vaquillonas_pesados": peso_prom_vaquillonas_pesados,
+    "peso_prom_novillos_pesados": peso_prom_novillos_pesados,
+}
+
 PARAMS = {
     "version": version,
     "periodos_modelo": periodos_modelo,
@@ -54,7 +68,7 @@ PARAMS = {
     "clases": clases,
     "ventas_max_por_mes": ventas_max_por_mes,
     "ventas_min_por_mes": ventas_min_por_mes,
-    "fecha_inicio": fecha_inicio,
+    "fecha_parte_diario_inicio" : fecha_parte_diario_inicio,
     "fecha_parte_diario_inicio": fecha_parte_diario_inicio,
     "costos_meses_usd_c1_c2": costos_meses_usd_c1_c2,
     "costos_c3": costos_c3_mes,
@@ -62,12 +76,8 @@ PARAMS = {
     "sell_c1_c2_before": sell_c1_c2_before,
     "multiplicador_destete": multiplicador_destete,
     "multiplicador_c3": multiplicador_c3,
-}
-
-SALES_PERIODS = {
-    "venta_destete": VENTA_DESTETE,
-    "venta_novillo_vaquillona": VENTA_NOVILLO_VAQUILLONA,
-    "venta_pesados": VENTA_PESADOS,
+    "SALES_PERIODS": SALES_PERIODS,
+    "PESOS_PROMEDIO": PESOS_PROMEDIO,
 }
 
 # ! WARNING, this will be regenerated out when running build_model_inputs.py
@@ -82,10 +92,4 @@ PATH_DAT_FILES = {
     "stock_inicial": "model_inputs/stock_inicial.dat",
 }
 
-PESOS_PROMEDIO = {
-    "peso_prom_destete": peso_prom_destete,
-    "peso_prom_vaquillonas": peso_prom_vaquillonas,
-    "peso_prom_novillitos": peso_prom_novillitos,
-    "peso_prom_vaquillonas_pesados": peso_prom_vaquillonas_pesados,
-    "peso_prom_novillos_pesados": peso_prom_novillos_pesados,
-}
+

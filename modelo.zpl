@@ -35,9 +35,6 @@ set E := { -1 .. animal_max_age };
 # clase del animal
 set C := { 1, 2, 3};
 
-# nacimientos por mes. suponemos cantidad constante. k en total por mes por clase
-param k := 1;
-
 # costo de los animales, en cada t,e,c
  param costo[T*E*C] := read "model_inputs/costos.dat" as "<1n,2n,3n> 4n";
 
@@ -68,7 +65,7 @@ var n[(T union {0}) * C] >= 0; # Esto ya especifica las restricciones de no nega
 
 # Funcion objetivo
 maximize fobj: sum <t,e,c> in T*E*C: (y[t,e,c] * precio[t,e,c] - x[t,e,c] * costo[t,e,c]);
-#maximize fobj: sum <t,e,c> in T*E*C: (y[t,e,c] * precio[t,e,c] - x[t,e,c]); #TESTING, NO COST
+#maximize fobj: sum <t,e,c> in T*E*C: (y[t,e,c] * precio[t,e,c]); #TESTING, NO COST
 
 
 #####----------- RESTRICCIONES -----------#####
@@ -113,8 +110,12 @@ subto sinventasiniciales: forall <e,c> in E*C:
 subto ventas_liga_stock: forall <t,e,c> in T*E*C:
     y[t,e,c] <= x[t,e,c];
 
-subto periodos_venta_no_posible_c1_c2: forall <t,e,c> in T*(E\momentos_venta_SI_c1_c2)*C with c != 3 and t != max_periods:
-    y[t,e,c] == 0;
+# this is replaced by restriction ventas_precio_cero_null
+#subto periodos_venta_no_posible_c1_c2: forall <t,e,c> in T*(E\momentos_venta_SI_c1_c2)*C with c != 3 and t != max_periods:
+#    y[t,e,c] == 0;
+
+subto ventas_precio_cero_null: forall <t,e,c> in T*E*C:
+    if (precio[t,e,c] <= 0) then y[t,e,c] == 0 end;
 
 
 ########## - STOCK - ##########
@@ -131,7 +132,7 @@ subto eq_stock_ini: forall <e,c> in E*C:
 subto no_stock_edad_neg: forall <t,c> in T*C:
     x[t,-1,c] == 0;
 
-#Edad máxima clase 1 y 2, 21.5 meses - 86 semanas, se venden antes.
+#Edad máxima clase 1 y 2, se venden antes.
 #subto edad_max_c1_c2: forall <t,e,c> in T*E*C with c != 3 and e > sell_c1_c2_before: 
 #    x[t,e,c] == 0;
    

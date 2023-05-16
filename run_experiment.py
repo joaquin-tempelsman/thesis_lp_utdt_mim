@@ -23,12 +23,18 @@ log.addHandler(ch)
 
 delete_log_files('lp_logs')
 
-exp_grid = {0 : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 24, 'fecha_fin_ejercicio': '01/01/2022'},
-            1 : {'fecha_inicio': '07/06/2019', 'periodos_modelo': 24, 'fecha_fin_ejercicio': '01/06/2022'},
-            2 : {'fecha_inicio': '01/03/2020', 'periodos_modelo': 24, 'fecha_fin_ejercicio': '01/01/2023'},
-            3 : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 36, 'fecha_fin_ejercicio': '01/01/2023'},
-            4 : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 48, 'fecha_fin_ejercicio': '01/01/2023'},
-            5 : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 42, 'fecha_fin_ejercicio': '01/01/2023'},
+exp_grid = {'2019_24periods_12eow_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 24, 'fecha_fin_ejercicio': '01/01/2022', 'fix_prices': False},
+            'mid2019_24periods_12eow_real_prices' : {'fecha_inicio': '07/06/2019', 'periodos_modelo': 24, 'fecha_fin_ejercicio': '01/06/2022', 'fix_prices': False},
+            '2020_24periods_12eow_real_prices' : {'fecha_inicio': '01/03/2020', 'periodos_modelo': 24, 'fecha_fin_ejercicio': '01/01/2023', 'fix_prices': False},
+            '2019_36periods_12eow_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 36, 'fecha_fin_ejercicio': '01/01/2023', 'fix_prices': False},
+            '2019_42periods_6eow_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 42, 'fecha_fin_ejercicio': '01/01/2023', 'fix_prices': False},
+            '2019_48periods_0eow_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 48, 'fecha_fin_ejercicio': '01/01/2023', 'fix_prices': False},
+            '2019_24periods_12eow_fix_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 24, 'fecha_fin_ejercicio': '01/01/2022', 'fix_prices': True},
+            'mid2019_24periods_12eow_fix_prices' : {'fecha_inicio': '07/06/2019', 'periodos_modelo': 24, 'fecha_fin_ejercicio': '01/06/2022', 'fix_prices': True},
+            '2020_24periods_12eow_fix_prices' : {'fecha_inicio': '01/03/2020', 'periodos_modelo': 24, 'fecha_fin_ejercicio': '01/01/2023', 'fix_prices': True},
+            '2019_36periods_12eow_fix_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 36, 'fecha_fin_ejercicio': '01/01/2023', 'fix_prices': True},
+            '2019_42periods_6eow_fix_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 42, 'fecha_fin_ejercicio': '01/01/2023', 'fix_prices': True},
+            '2019_48periods_0eow_fix_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 48, 'fecha_fin_ejercicio': '01/01/2023', 'fix_prices': True},
 }
 
 for experiment, items in exp_grid.items():
@@ -37,17 +43,17 @@ for experiment, items in exp_grid.items():
     PARAMS['periodos_modelo'] = items['periodos_modelo']
     PARAMS['fecha_fin_ejercicio'] = items['fecha_fin_ejercicio']
 
-    initial_stock_cost = build_LP_inputs(PARAMS, PATH_DAT_FILES, path_scrapped_prices_df, PESOS_PROMEDIO, path_parte_diario, intervalos_madurez, COST_TEST=False, INITIAL_STOCK_TEST=False)
+    initial_stock_cost = build_LP_inputs(PARAMS, PATH_DAT_FILES, path_scrapped_prices_df, PESOS_PROMEDIO, path_parte_diario, intervalos_madurez, COST_TEST=False, INITIAL_STOCK_TEST=False, fix_prices = items['fix_prices'])
     exp_grid[experiment]['lp_stock_history_cost'] = initial_stock_cost
     
     # run LP
-    os.system(f"sudo docker exec scipTeach2 scip -f modelo.zpl -l lp_logs/exp_{experiment}.log")
+    os.system(f"sudo docker exec scipTeach2 scip -f modelo.zpl -l lp_logs/{experiment}.log")
 
     # compare with business variant data
     business_excercise = business_variant(PARAMS, PESOS_PROMEDIO, path_parte_diario, path_scrapped_prices_df)
     exp_grid[experiment]['business_results'] = business_excercise
 
-
+log.info("saving experiment results at lp_logs/experiments_results.json")
 with open("lp_logs/experiments_results.json", "w") as json_file:
     json.dump(exp_grid, json_file)
 

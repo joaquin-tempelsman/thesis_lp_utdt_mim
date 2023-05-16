@@ -15,17 +15,15 @@ from preprocessing.data_prep import (
     get_stock_inicial_from_parte_diario,
     get_precios_del_periodo,
     quote_stock,
-    get_ventas_inicial_from_parte_diario,
-    append_daily_income_and_cost,
-    business_exercise_value,
     costs_to_dat_realistic,
+    apply_contant_prices,
 )
 
 log = logging.getLogger('logger')
 
 
 
-def build_LP_inputs(PARAMS, PATH_DAT_FILES, path_scrapped_prices_df, PESOS_PROMEDIO, path_parte_diario, intervalos_madurez, COST_TEST=False, INITIAL_STOCK_TEST=False):
+def build_LP_inputs(PARAMS, PATH_DAT_FILES, path_scrapped_prices_df, PESOS_PROMEDIO, path_parte_diario, intervalos_madurez, COST_TEST=False, INITIAL_STOCK_TEST=False, fix_prices= False):
         
     #PARAMS["fecha_fin_ejercicio"] = pd.to_datetime(
     #PARAMS["fecha_inicio"], format="%d/%m/%Y"
@@ -59,7 +57,7 @@ def build_LP_inputs(PARAMS, PATH_DAT_FILES, path_scrapped_prices_df, PESOS_PROME
     log.info(f"getting prices from historical scrapped data")
     df_precios = get_precios_scrapped(
         fecha_inicio=PARAMS["fecha_inicio"], input=path_scrapped_prices_df
-    )
+        )
 
     log.info(f"prices to USD B")
     df_precios = prices_to_usd_b(
@@ -72,6 +70,9 @@ def build_LP_inputs(PARAMS, PATH_DAT_FILES, path_scrapped_prices_df, PESOS_PROME
             "NOVILLITOS391",
         ],
     )
+
+    if fix_prices:
+        df_precios = apply_contant_prices(df_precios)
 
     log.info(f"writing prices.dat file")
     precios_scrapped_to_dat(

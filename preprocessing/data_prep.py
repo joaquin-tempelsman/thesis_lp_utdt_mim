@@ -149,7 +149,18 @@ def get_precios_scrapped(fecha_inicio, input):
         "NOVILLITOS391",
     ]
     df_precios[cols_to_numeric] = df_precios[cols_to_numeric].apply(pd.to_numeric)
-    df_precios["YYYYMM"] = df_precios.PERIODO_INICIO.dt.strftime("%Y%m")
+
+    columns = ["VAQUILLONAS270", "VAQUILLONAS391", "NOVILLITOS300", "NOVILLITOS391"]
+
+    # ! manual fix for missing values at the end of period. I give a 2% monthly increase in price
+    for counter, value in enumerate(range(101, 109)):
+        for col in columns:
+            df_precios.loc[value, col] = round(df_precios.loc[value - 1, col] * 1.02)
+        df_precios.loc[value, "PERIODO_INICIO"] = df_precios.loc[
+            value - 1, "PERIODO_INICIO"
+        ] + pd.DateOffset(months=1)
+
+        df_precios["YYYYMM"] = df_precios.PERIODO_INICIO.dt.strftime("%Y%m")
 
     return df_precios
 
@@ -323,6 +334,7 @@ def clear_model_inputs(file_paths):
         if os.path.exists(file):
             os.remove(file)
 
+
 def costs_to_dat_test(PATH_DAT_FILES, periodos_modelo, meses_max_animales, clases):
     collect_costos = []
 
@@ -452,7 +464,7 @@ def write_params_file(PATH_DAT_FILES, PARAMS):
         f.write(f"min_sell_qty_monthly {PARAMS['ventas_min_por_mes']}\n")
         f.write(f"sell_c1_c2_before {PARAMS['sell_c1_c2_before']}\n")
 
-       # Write August birth data to file
+    # Write August birth data to file
     with open(PATH_DAT_FILES["agosto_si"], "w") as f_yes, open(
         PATH_DAT_FILES["agosto_no"], "w"
     ) as f_no:
@@ -716,8 +728,10 @@ def quote_stock(prices, stock_row, PESOS_PROMEDIO, costs_interpolator):
 def business_exercise_value(
     df_ventas, df_precios, PARAMS, path_parte_diario, PESOS_PROMEDIO, costs_interpolator
 ):
-    fecha_fin_ejercicio = pd.to_datetime(PARAMS["fecha_fin_ejercicio"], format="%d/%m/%Y")
-    
+    fecha_fin_ejercicio = pd.to_datetime(
+        PARAMS["fecha_fin_ejercicio"], format="%d/%m/%Y"
+    )
+
     ## -- sales to value -- ##
     df_ventas_cut = df_ventas[
         (df_ventas["FECHA"] >= PARAMS["fecha_inicio"])
@@ -775,6 +789,21 @@ def delete_log_files(path):
         if file_name.endswith(".log"):
             # Construct the full file path
             file_path = os.path.join(path, file_name)
-            
+
             # Delete the log file
             os.remove(file_path)
+
+
+def apply_contant_prices(df_precios):
+    cols = {
+        "VAQUILLONAS270": 1.75,
+        "VAQUILLONAS391": 1.625,
+        "NOVILLITOS300": 1.875,
+        "NOVILLITOS391": 1.81,
+    }
+
+    for index, row in df_precios.iterrows():
+        for col in cols.keys():
+            df_precios.loc[index, col] = cols[col]
+
+    return df_precios

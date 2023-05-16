@@ -16,7 +16,7 @@ step 3 detecto problema si hay stock init c3 de 24 meses
 precios scrapped desde = 31/01/2014,10/02/2014
 precios scrapped hasta = 31/05/2022,10/06/2022
 
-ventas  from abril 01 2019 00:00:00 
+ventas  from enero 18 2019 00:00:00 
 ventas to enero 12 2023 00:00:00
 
 - y los nacimientos?, estan informados en el parte diario. Se inputan a la vez en nacimientos 10 y 6 orejano macho 4 orejano HEMBRAS
@@ -31,3 +31,7 @@ por lo que lo estamos cuantificando
 idea: pensar que la idea es construir una SN y comparar en segundo lugar vs negocio de la forma
 mas realista posible con los supuestos en su lugar. el fin no es el experimento con 100% de comparabilidad
 en si sino la solucion
+
+###
+
+1) precios scrapping hasta 31/05/2022, queremos llegar a dic 2022, cargar si necesario. 

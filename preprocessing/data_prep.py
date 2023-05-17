@@ -785,13 +785,11 @@ def delete_log_files(path):
 
     # Iterate over each file in the path
     for file_name in files:
-        # Check if the file ends with ".log"
-        if file_name.endswith(".log"):
-            # Construct the full file path
-            file_path = os.path.join(path, file_name)
+        
+        file_path = os.path.join(path, file_name)
 
-            # Delete the log file
-            os.remove(file_path)
+        # Delete the log file
+        os.remove(file_path)
 
 
 def apply_contant_prices(df_precios):

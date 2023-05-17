@@ -2,8 +2,11 @@ import pandas as pd
 import numpy as np
 import warnings
 import plotly.express as px
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
-warnings.filterwarnings('ignore')
+warnings.filterwarnings("ignore")
+
 
 def read_text_file(file_name):
     with open(file_name, "r") as f:
@@ -20,6 +23,7 @@ def get_line_number_with_string(file_name, string):
 def select_line_number(raw, line_nr):
     return raw.split("\n")[line_nr]
 
+
 def read_scip_log(log_file_path):
     Log_df = pd.DataFrame()
 
@@ -28,13 +32,12 @@ def read_scip_log(log_file_path):
         log_file_path, "================================="
     )
 
-
     # once per log
     objective_value = select_line_number(raw, results_line_nr + 2).split(" ")[-1]
 
-
     row_from = (
-        get_line_number_with_string(log_file_path, "=================================") + 3
+        get_line_number_with_string(log_file_path, "=================================")
+        + 3
     )
     row_to = get_line_number_with_string(log_file_path, "Statistics") - 2
 
@@ -51,11 +54,11 @@ def read_scip_log(log_file_path):
             }
         )
         Log_df = pd.concat([Log_df, pd.DataFrame([row_data])], ignore_index=True)
-    
+
     return Log_df
 
-def format_log_df(Log_df):
 
+def format_log_df(Log_df):
     Log_df["var"] = Log_df["variable"].str.split("#").str[0]
     Log_df["t"] = Log_df["variable"].str.split("#").str[1]
     Log_df["age"] = Log_df["variable"].str.split("#").str[2]
@@ -138,8 +141,8 @@ def format_log_df(Log_df):
 
     return Log_df
 
-def operations_plots(Log_df, periodos_modelo):
 
+def operations_plots(Log_df, periodos_modelo, periods_before_eow):
     # maximos/minimos para rangos del eje Y
     x_max = Log_df.loc[Log_df["var"] == "x"].value.max()
     x_min = Log_df.loc[Log_df["var"] == "x"].value.min()
@@ -169,6 +172,41 @@ def operations_plots(Log_df, periodos_modelo):
     )
     fig0.show()
 
+    ######################
+
+    stock_tn_before_eow = Log_df.loc[
+        (Log_df["var"].isin(["x", "y"])) & (Log_df["t"] == periods_before_eow)
+    ].sort_values(by=["class", "age"])
+
+    stock_tn_before_eow["value"] = np.where(
+        stock_tn_before_eow["var"] == "y",
+        stock_tn_before_eow["value"] * -1,
+        stock_tn_before_eow["value"],
+    )
+    stock_tn_before_eow = (
+        stock_tn_before_eow.groupby(["t", "age", "class"]).sum().reset_index()
+    )
+    fign = px.bar(
+        stock_tn_before_eow,
+        x="class",
+        y="value",
+        color="age",
+        color_continuous_scale="brwnyl",
+        title="stock final por clase",
+        range_x=[0, 2],
+        range_y=[0, stock_tn_before_eow.groupby("class").sum().max()["value"]],
+    )
+    fign.update_traces(width=0.8)
+    fign.update_layout(
+        height=500,
+        width=600,
+        xaxis_title="Clases",
+        yaxis_title="stock",
+    )
+    fign.show()
+
+    ######################
+
     stock_tn = Log_df.loc[
         (Log_df["var"].isin(["x", "y"])) & (Log_df["t"] == periodos_modelo)
     ].sort_values(by=["class", "age"])
@@ -196,6 +234,8 @@ def operations_plots(Log_df, periodos_modelo):
     )
     fign.show()
 
+    ######################
+
     stock = Log_df.loc[(Log_df["var"] == "x")]
     fig1 = px.bar(
         stock,
@@ -209,6 +249,7 @@ def operations_plots(Log_df, periodos_modelo):
         range_y=[0, x_max],
     )
 
+    fig1.add_vline(x=periods_before_eow, line_dash="dash", line_color="red")
 
     fig1.update_traces(width=1)
     fig1.update_layout(
@@ -218,6 +259,8 @@ def operations_plots(Log_df, periodos_modelo):
         yaxis_title="cantidad",
     )
     fig1.show()
+
+    ######################
 
     ventas = Log_df.loc[(Log_df["var"] == "y")]
 
@@ -232,6 +275,9 @@ def operations_plots(Log_df, periodos_modelo):
         range_x=[0, periodos_modelo],
         range_y=[0, y_max],
     )
+
+    fig2.add_vline(x=periods_before_eow, line_dash="dash", line_color="red")
+
     fig2.update_traces(width=2)
     fig2.update_layout(
         xaxis_title="tiempo",
@@ -240,6 +286,8 @@ def operations_plots(Log_df, periodos_modelo):
         yaxis_title="cantidad",
     )
     fig2.show()
+
+    ######################
 
     trasp_df = Log_df.loc[Log_df["var"] == "w"].sort_values(by="t")
     nacimientos_df = (
@@ -258,6 +306,9 @@ def operations_plots(Log_df, periodos_modelo):
             title="nacimientos por clase",
             color_discrete_sequence=px.colors.qualitative.T10,
         )
+
+        fig4.add_vline(x=periods_before_eow, line_dash="dash", line_color="red")
+
         fig4.update_traces(width=2)
         fig4.update_layout(
             height=500, width=600, xaxis_title="tiempo", yaxis_title="cantidad"
@@ -265,6 +316,8 @@ def operations_plots(Log_df, periodos_modelo):
         fig4.show()
     except ValueError:
         pass
+
+    ######################
 
     try:
         # traspasos barplot
@@ -275,6 +328,9 @@ def operations_plots(Log_df, periodos_modelo):
             title="traspasos de clase 2 a 3",
             color_discrete_sequence=px.colors.qualitative.Vivid,
         )
+
+        fig3.add_vline(x=periods_before_eow, line_dash="dash", line_color="red")
+
         fig3.update_traces(width=2)
         fig3.update_layout(
             height=500, width=600, xaxis_title="tiempo", yaxis_title="cantidad"
@@ -283,9 +339,11 @@ def operations_plots(Log_df, periodos_modelo):
     except ValueError:
         pass
 
-def objective_function_plots(Log_df, periodos_modelo):
 
-    group_obj_func = Log_df.groupby(["var", "t"])["impact_on_obj_func"].sum().reset_index()
+def objective_function_plots(Log_df, periodos_modelo, periods_before_eow):
+    group_obj_func = (
+        Log_df.groupby(["var", "t"])["impact_on_obj_func"].sum().reset_index()
+    )
 
     # total value per period
     obj_sum = (
@@ -307,6 +365,9 @@ def objective_function_plots(Log_df, periodos_modelo):
         range_x=[-5, periodos_modelo],
         title="variacion de funcion de ganancia",
     )
+
+    fig.add_vline(x=periods_before_eow, line_dash="dash", line_color="red")
+
     fig.update_layout(xaxis_title="tiempo", yaxis_title="impacto funcion objetivo")
     fig.show()
 
@@ -315,5 +376,78 @@ def objective_function_plots(Log_df, periodos_modelo):
     fig2 = px.line(
         cumsum_df, x="t", y="cumsum_obj_func", title="ganancia acumulada en el tiempo"
     )
+
+    fig2.add_vline(x=periods_before_eow, line_dash="dash", line_color="red")
+
     fig2.update_layout(xaxis_title="tiempo", yaxis_title="funcion objetivo acumulada")
     fig2.show()
+
+
+def get_month_difference(start_date_ddmmyy, end_date_ddmmyy):
+    start_date = datetime.strptime(start_date_ddmmyy, "%d/%m/%Y")
+    end_date = datetime.strptime(end_date_ddmmyy, "%d/%m/%Y")
+    diff = relativedelta(end_date, start_date)
+    month_difference = diff.years * 12 + diff.months
+    if diff.days > 0:
+        month_difference += 1
+    return month_difference
+
+def round_to_nearest(x, round_ages_to = [7, 17, 33]):
+        return min(round_ages_to, key=lambda y: abs(y - x))
+
+
+def get_revenue_before_eow(Log_df, periods_before_eow, PARAMS, experiment_results, experiment):
+
+    # sum obj func hasta periods_before_eow
+    obj_func_sum = Log_df.loc[Log_df["t"] <= periods_before_eow]["impact_on_obj_func"].sum()
+
+    # valuacion stock en el periodo eow, lo llevo a la categoria mas cercana
+    stock_to_quote = Log_df.loc[
+        (Log_df["t"] == periods_before_eow) & (Log_df["var"] == "x")
+    ]
+    stock_to_quote["age"] = stock_to_quote["age"].apply(round_to_nearest)
+    stock_to_quote['class'] = stock_to_quote['class'].astype(int)
+
+    pfix = experiment_results[experiment]["fix_prices"]
+    df_precios = pd.read_csv(f"../lp_logs/df_precios_fix{pfix}.csv")
+    fin_ejerc_dt = pd.to_datetime(
+        experiment_results[experiment]["fecha_fin_ejercicio"], format="%d/%m/%Y"
+    )
+    df_precios = df_precios.loc[df_precios["YYYYMM"] == int(fin_ejerc_dt.strftime("%Y%m"))]
+    PESOS_PROMEDIO = PARAMS["PESOS_PROMEDIO"]
+
+    for index, row in stock_to_quote.iterrows():
+        if row["class"] == 3:
+            stock_to_quote.loc[index, "QUOTED_STOCK"] = (
+                float(df_precios["VAQUILLONAS270"] * 0.5 * PESOS_PROMEDIO["peso_prom_vaquillonas"])
+            )
+        elif row["age"] == 7:
+            stock_to_quote.loc[index, "QUOTED_STOCK"] = (
+                row["value"]
+                * df_precios["NOVILLITOS300"].values[0]
+                * PARAMS["multiplicador_destete"]
+                * PESOS_PROMEDIO["peso_prom_destete"]
+            )
+        elif row["age"] == 17:
+            if row["class"] == 1:
+                stock_to_quote.loc[index, "QUOTED_STOCK"] = (
+                    row["value"]
+                    * df_precios["NOVILLITOS300"].values[0]
+                    * PESOS_PROMEDIO["peso_prom_novillitos"]
+                )
+            elif row["class"] == 2:
+                stock_to_quote.loc[index, "QUOTED_STOCK"] = (
+                    row["value"]
+                    * df_precios["VAQUILLONAS270"].values[0]
+                    * PESOS_PROMEDIO["peso_prom_vaquillonas"]
+                )
+        elif row["age"] == 33:
+            stock_to_quote.loc[index, "QUOTED_STOCK"] = (
+                row["value"]
+                * df_precios["NOVILLITOS391"].values[0]
+                * PESOS_PROMEDIO["peso_prom_novillos_pesados"]
+            )
+
+    stock_quoted_sum = stock_to_quote["QUOTED_STOCK"].sum()
+
+    return obj_func_sum + stock_quoted_sum

@@ -19,17 +19,20 @@ from preprocessing.data_prep import (
     apply_contant_prices,
 )
 
-log = logging.getLogger('logger')
+log = logging.getLogger("logger")
 
 
-
-def build_LP_inputs(PARAMS, PATH_DAT_FILES, path_scrapped_prices_df, PESOS_PROMEDIO, path_parte_diario, intervalos_madurez, COST_TEST=False, INITIAL_STOCK_TEST=False, fix_prices= False):
-        
-    #PARAMS["fecha_fin_ejercicio"] = pd.to_datetime(
-    #PARAMS["fecha_inicio"], format="%d/%m/%Y"
-    #) + relativedelta(months=+PARAMS["periodos_modelo"])
-    #log.info(f"experiment from {PARAMS['fecha_inicio']} to {PARAMS['fecha_fin_ejercicio']}")
-
+def build_LP_inputs(
+    PARAMS,
+    PATH_DAT_FILES,
+    path_scrapped_prices_df,
+    PESOS_PROMEDIO,
+    path_parte_diario,
+    intervalos_madurez,
+    COST_TEST=False,
+    INITIAL_STOCK_TEST=False,
+    fix_prices=False,
+):
     log.info(f"cleaning .dat files from {PATH_DAT_FILES}")
     clear_model_inputs(PATH_DAT_FILES)
 
@@ -57,7 +60,7 @@ def build_LP_inputs(PARAMS, PATH_DAT_FILES, path_scrapped_prices_df, PESOS_PROME
     log.info(f"getting prices from historical scrapped data")
     df_precios = get_precios_scrapped(
         fecha_inicio=PARAMS["fecha_inicio"], input=path_scrapped_prices_df
-        )
+    )
 
     log.info(f"prices to USD B")
     df_precios = prices_to_usd_b(
@@ -98,10 +101,14 @@ def build_LP_inputs(PARAMS, PATH_DAT_FILES, path_scrapped_prices_df, PESOS_PROME
             output=PATH_DAT_FILES["stock_inicial"],
             intervalos=intervalos_madurez,
         )
-        log.info(f"get initial stock COST to add it to business variant for comparison")
+        log.info(
+            f"""get costs from stock before the model starts, 
+            so we can substract to LP revenue so its comparable to 
+            business which sells and pays cost for all its stock"""
+        )
         # get initial stock cost only (no income)
         prices_initial_period = get_precios_del_periodo(
-            pd.to_datetime(PARAMS['fecha_inicio'], format="%d/%m/%Y"), df_precios
+            pd.to_datetime(PARAMS["fecha_inicio"], format="%d/%m/%Y"), df_precios
         ).to_dict()
         initial_stock_cost = quote_stock(
             prices_initial_period, initial_stock_row, PESOS_PROMEDIO, costs_interpolator
@@ -109,7 +116,4 @@ def build_LP_inputs(PARAMS, PATH_DAT_FILES, path_scrapped_prices_df, PESOS_PROME
 
         log.info(f"MODEL initial stock cost: {initial_stock_cost}")
 
-        return initial_stock_cost
-
-
-    
+        return initial_stock_cost, df_precios

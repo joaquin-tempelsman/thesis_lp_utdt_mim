@@ -221,7 +221,7 @@ def precios_scrapped_to_dat(
             if edad_animal in [6, 7, 8]:
                 if clase == 1:
                     precio = (
-                        float(row["VAQUILLONAS270"])
+                        float(row["NOVILLITOS300"])
                         * peso_prom_destete
                         * PARAMS["multiplicador_destete"]
                     )
@@ -474,7 +474,7 @@ def write_params_file(PATH_DAT_FILES, PARAMS):
             (start_date + pd.DateOffset(months=i)).strftime("%Y-%m-%d"): (i, 1)
             if (start_date + pd.DateOffset(months=i)).month == 8
             else (i, 0)
-            for i in range(PARAMS["periodos_modelo"])
+            for i in range(PARAMS["periodos_modelo"]+1)
         }
 
         for key, value in date_dict.items():

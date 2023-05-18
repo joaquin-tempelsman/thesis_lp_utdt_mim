@@ -150,7 +150,7 @@ def operations_plots(Log_df, periodos_modelo, periods_before_eow):
     y_min = Log_df.loc[Log_df["var"] == "y"].value.min()
 
     stock_t0 = Log_df.loc[(Log_df["var"] == "x") & (Log_df["t"] == 0)].sort_values(
-        by=["class", "age"]
+        by=["class", "age"], ascending=[True, False]
     )
     fig0 = px.bar(
         stock_t0,
@@ -176,7 +176,7 @@ def operations_plots(Log_df, periodos_modelo, periods_before_eow):
 
     stock_tn_before_eow = Log_df.loc[
         (Log_df["var"].isin(["x", "y"])) & (Log_df["t"] == periods_before_eow)
-    ].sort_values(by=["class", "age"])
+    ].sort_values(by=["class", "age"], ascending=[True, False])
 
     stock_tn_before_eow["value"] = np.where(
         stock_tn_before_eow["var"] == "y",
@@ -209,7 +209,7 @@ def operations_plots(Log_df, periodos_modelo, periods_before_eow):
 
     stock_tn = Log_df.loc[
         (Log_df["var"].isin(["x", "y"])) & (Log_df["t"] == periodos_modelo)
-    ].sort_values(by=["class", "age"])
+    ].sort_values(by=["class", "age"], ascending=[True, False])
 
     stock_tn["value"] = np.where(
         stock_tn["var"] == "y", stock_tn["value"] * -1, stock_tn["value"]
@@ -236,7 +236,7 @@ def operations_plots(Log_df, periodos_modelo, periods_before_eow):
 
     ######################
 
-    stock = Log_df.loc[(Log_df["var"] == "x")]
+    stock = Log_df.loc[(Log_df["var"] == "x")].sort_values(by=["class", "age"], ascending=[True, False])
     fig1 = px.bar(
         stock,
         x="t",
@@ -371,8 +371,9 @@ def objective_function_plots(Log_df, periodos_modelo, periods_before_eow):
     fig.update_layout(xaxis_title="tiempo", yaxis_title="impacto funcion objetivo")
     fig.show()
 
-    cumsum_df = group_obj_func.groupby("t").sum().reset_index()
+    cumsum_df = Log_df.groupby("t").sum()['impact_on_obj_func'].reset_index()
     cumsum_df["cumsum_obj_func"] = cumsum_df["impact_on_obj_func"].cumsum()
+    
     fig2 = px.line(
         cumsum_df, x="t", y="cumsum_obj_func", title="ganancia acumulada en el tiempo"
     )
@@ -450,4 +451,42 @@ def get_revenue_before_eow(Log_df, periods_before_eow, PARAMS, experiment_result
 
     stock_quoted_sum = stock_to_quote["QUOTED_STOCK"].sum()
 
-    return obj_func_sum + stock_quoted_sum
+    return obj_func_sum + stock_quoted_sum, stock_quoted_sum
+
+def get_business_sales(business_sales_path, experiment, experiment_results):
+    df_sales = pd.read_csv(business_sales_path)
+    df_sales["FECHA"] = pd.to_datetime(df_sales["FECHA"], format="%Y-%m-%d")
+
+    df_sales = df_sales.melt(
+        id_vars=["FECHA"],
+        value_vars=[
+            "VACAS",
+            "VAQUILLONAS270",
+            "NOVILLITOS391",
+            "NOVILLITOS300",
+            "TOROS",
+            "TERNEROS_DESTETE",
+            "TERNERAS_DESTETE",
+        ],
+        var_name="class",
+        value_name="value",
+    )
+
+    desde = pd.to_datetime(
+        experiment_results[experiment]["fecha_inicio"], format="%d/%m/%Y"
+    )
+    hasta = pd.to_datetime(
+        experiment_results[experiment]["fecha_fin_ejercicio"], format="%d/%m/%Y"
+    )
+
+    df_sales = df_sales.loc[(df_sales["FECHA"] >= desde) & (df_sales["FECHA"] <= hasta)]
+
+    fig2 = px.bar(
+        df_sales,
+        x="FECHA",
+        y="value",
+        color="class",
+        color_continuous_scale="Blugrn",
+        title="ventas por categoria negocio",
+    )
+    fig2.show()

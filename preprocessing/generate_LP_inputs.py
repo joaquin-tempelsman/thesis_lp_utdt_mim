@@ -36,8 +36,8 @@ def build_LP_inputs(
     log.info(f"cleaning .dat files from {PATH_DAT_FILES}")
     clear_model_inputs(PATH_DAT_FILES)
 
-    ## LP SETTINGS ##
-    # [max_periods, max_age_allowed, max_sell_qty_monthlY, ...]
+   
+   
     log.info(f"creating parameters.dat file")
     write_params_file(PATH_DAT_FILES, PARAMS)
 
@@ -45,7 +45,7 @@ def build_LP_inputs(
 
     if COST_TEST:
         log.info(f"building costs.dat test mode ON")
-        df_cost_plot = costs_to_dat_test(
+        costs_to_dat_test(
             PATH_DAT_FILES,
             PARAMS["periodos_modelo"],
             PARAMS["meses_max_animales"],
@@ -94,7 +94,7 @@ def build_LP_inputs(
     else:
         log.info(f"building stock_inicial.dat realistic")
         initial_stock_row = get_stock_inicial_from_parte_diario(
-            PARAMS["fecha_parte_diario_inicio"],
+            PARAMS["fecha_inicio"],
             PARAMS["clases"],
             PARAMS["meses_max_animales"],
             parte_diario_path=path_parte_diario,

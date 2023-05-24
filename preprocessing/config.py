@@ -1,11 +1,8 @@
 version = "0.09"
 clases = 3
-periodos_modelo = 20  # 1 año
 meses_max_animales = 12 * 10  # 10 años, impacta en reproductoras
 ventas_max_por_mes = 100
 ventas_min_por_mes = 10
-#fecha_inicio = "01/04/2019"  # este valor se usa para tomar un stock inicial, y para pasar precios desde el periodo 0 a el final del modelo
-fecha_parte_diario_inicio = "01/04/2019"
 sell_c1_c2_before = 37
 path_parte_diario = "data/datos experimento tesis  - parte_diario completo.csv"
 path_scrapped_prices_df = "data/scrapping_df3 - scrapping_df3.csv"
@@ -31,6 +28,7 @@ costos_c3_mes = 12
 c1_c2_over_21 = 21  # pasados los 21, para clase 1 y 2, el costo diario es el maximo dado el limite sup de meses en la funcion
 multiplicador_destete = 1.2  # precio venta 20% mas que el precio del novillito
 multiplicador_c3 = 0.5  # precio de venta 50% de VAQUILLONAS270
+venta_c3_from = 24 # se puede vender c3 desde los 24 en adelante
 
 intervalos_madurez = {
     "VACAS": [37, 96, 3],
@@ -63,13 +61,10 @@ PESOS_PROMEDIO = {
 
 PARAMS = {
     "version": version,
-    "periodos_modelo": periodos_modelo,
     "meses_max_animales": meses_max_animales,
     "clases": clases,
     "ventas_max_por_mes": ventas_max_por_mes,
     "ventas_min_por_mes": ventas_min_por_mes,
-    "fecha_parte_diario_inicio" : fecha_parte_diario_inicio,
-    "fecha_parte_diario_inicio": fecha_parte_diario_inicio,
     "costos_meses_usd_c1_c2": costos_meses_usd_c1_c2,
     "costos_c3": costos_c3_mes,
     "c1_c2_over_21": c1_c2_over_21,
@@ -78,6 +73,7 @@ PARAMS = {
     "multiplicador_c3": multiplicador_c3,
     "SALES_PERIODS": SALES_PERIODS,
     "PESOS_PROMEDIO": PESOS_PROMEDIO,
+    "venta_c3_from": venta_c3_from,
 }
 
 # ! WARNING, this will be regenerated out when running build_model_inputs.py

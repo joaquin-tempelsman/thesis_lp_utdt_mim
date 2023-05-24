@@ -192,7 +192,7 @@ def operations_plots(Log_df, periodos_modelo, periods_before_eow):
         y="value",
         color="age",
         color_continuous_scale="brwnyl",
-        title="stock final por clase",
+        title="stock before EOW por clase",
         range_x=[0, 2],
         range_y=[0, stock_tn_before_eow.groupby("class").sum().max()["value"]],
     )
@@ -221,7 +221,7 @@ def operations_plots(Log_df, periodos_modelo, periods_before_eow):
         y="value",
         color="age",
         color_continuous_scale="brwnyl",
-        title="stock final por clase",
+        title="stock EOW por clase",
         range_x=[0, 2],
         range_y=[0, stock_tn.groupby("class").sum().max()["value"]],
     )
@@ -389,8 +389,8 @@ def get_month_difference(start_date_ddmmyy, end_date_ddmmyy):
     end_date = datetime.strptime(end_date_ddmmyy, "%d/%m/%Y")
     diff = relativedelta(end_date, start_date)
     month_difference = diff.years * 12 + diff.months
-    if diff.days > 0:
-        month_difference += 1
+    #if diff.days > 0:
+    #    month_difference += 1
     return month_difference
 
 def round_to_nearest(x, round_ages_to = [7, 17, 33]):
@@ -443,19 +443,27 @@ def get_revenue_before_eow(Log_df, periods_before_eow, PARAMS, experiment_result
                     * PESOS_PROMEDIO["peso_prom_vaquillonas"]
                 )
         elif row["age"] == 33:
-            stock_to_quote.loc[index, "QUOTED_STOCK"] = (
-                row["value"]
-                * df_precios["NOVILLITOS391"].values[0]
-                * PESOS_PROMEDIO["peso_prom_novillos_pesados"]
-            )
+            if row["class"] == 1:
+                stock_to_quote.loc[index, "QUOTED_STOCK"] = (
+                    row["value"]
+                    * df_precios["NOVILLITOS391"].values[0]
+                    * PESOS_PROMEDIO["peso_prom_novillos_pesados"]
+                )
+            elif row["class"] == 2:
+                stock_to_quote.loc[index, "QUOTED_STOCK"] = (
+                    row["value"]
+                    * df_precios["VAQUILLONAS391"].values[0]
+                    * PESOS_PROMEDIO["peso_prom_vaquillonas_pesados"]
+                )
 
     stock_quoted_sum = stock_to_quote["QUOTED_STOCK"].sum()
 
     return obj_func_sum + stock_quoted_sum, stock_quoted_sum
 
-def get_business_sales(business_sales_path, experiment, experiment_results):
+def get_business_sales(business_sales_path, experiment, experiment_results, filter_from = '01/01/2019'):
     df_sales = pd.read_csv(business_sales_path)
     df_sales["FECHA"] = pd.to_datetime(df_sales["FECHA"], format="%Y-%m-%d")
+    df_sales = df_sales.loc[df_sales['FECHA'] > filter_from]
 
     df_sales = df_sales.melt(
         id_vars=["FECHA"],
@@ -479,14 +487,30 @@ def get_business_sales(business_sales_path, experiment, experiment_results):
         experiment_results[experiment]["fecha_fin_ejercicio"], format="%d/%m/%Y"
     )
 
-    df_sales = df_sales.loc[(df_sales["FECHA"] >= desde) & (df_sales["FECHA"] <= hasta)]
+    # df_sales = df_sales.loc[(df_sales["FECHA"] >= desde) & (df_sales["FECHA"] <= hasta)]
+
+    # Set the desired colors for each category
+    colors = {
+        "VACAS": "green",
+        "VAQUILLONAS270": "orange",
+        "NOVILLITOS391": "darkblue",
+        "NOVILLITOS300": "blue",
+        "TERNEROS_DESTETE": "fuchsia",
+        "TERNERAS_DESTETE": "lightpink",
+    }
 
     fig2 = px.bar(
         df_sales,
         x="FECHA",
         y="value",
         color="class",
-        color_continuous_scale="Blugrn",
-        title="ventas por categoria negocio",
+        color_discrete_map=colors,  # Set the desired colors using color_discrete_map
+        title="ventas por categoria negocio"
     )
+
+    fig2.add_vline(x=desde, line_dash="dash", line_color="red")
+    fig2.add_vline(x=hasta, line_dash="dash", line_color="red")
+
+
     fig2.show()
+

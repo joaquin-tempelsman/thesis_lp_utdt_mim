@@ -15,6 +15,8 @@ param venta_min := read "model_inputs/parametros.dat" as "2n" skip 4 use 1;
 # vender c1 c2 antes de X mes
 param sell_c1_c2_before := read "model_inputs/parametros.dat" as "2n" skip 5 use 1;
 
+# demandar stock c3 inicial sea igual al stock c3 final
+param MANTAIN_C3_STOCK := read "model_inputs/parametros.dat" as "2n" skip 6 use 1;
 
 # meses posibles donde hay nacimientos
 set meses_agosto_si := { read "model_inputs/agosto_si.dat" as "<1n>"};
@@ -102,9 +104,13 @@ subto venta_minima: forall <t> in T:
     sum <e,c> in E*C: y[t,e,c] * s[t] >= venta_min;
 
 
-# No hay ventas en el periodo inicial
-subto sinventasiniciales: forall <e,c> in E*C:
+# No hay ventas en el periodo inicial ni final para facilitar cotizacion en periodo de cierre
+subto sinventasiniciales0: forall <e,c> in E*C:
     y[0,e,c] == 0;
+
+subto sinventasfinales1: forall <e,c> in E*C:
+    y[max_periods,e,3] == 0;
+
 
 # Restriccion de ventas, no puedo vender mas de lo que tengo disponible.
 subto ventas_liga_stock: forall <t,e,c> in T*E*C:
@@ -121,7 +127,7 @@ subto ventas_precio_cero_null: forall <t,e,c> in T*E*C:
 ########## - STOCK - ##########
 
 subto eq_stock_ini: forall <e,c> in E*C:
-   x[0,e,c] == stock_inicial[e,c];
+    x[0,e,c] == stock_inicial[e,c];
 
 # Restricción cantidad de stock maximo por periodo 
 #subto stockmax: forall <t> in T:
@@ -135,7 +141,19 @@ subto no_stock_edad_neg: forall <t,c> in T*C:
 #Edad máxima clase 1 y 2, se venden antes.
 #subto edad_max_c1_c2: forall <t,e,c> in T*E*C with c != 3 and e > sell_c1_c2_before: 
 #    x[t,e,c] == 0;
-   
+
+subto c3_bigger_or_equal_end_of_period:
+    sum <e> in E: x[0,e,3] <= sum <e> in E: x[max_periods,e,3];
+
+
+
+
+#subto c3_bigger_or_equal_end_of_period:
+#    if MANTAIN_C3_STOCK == 1 then
+#        sum <e> in E: x[0, e, 3] <= sum <e> in E: x[max_periods, e, 3]
+#    endif
+
+
 
 ######## - TRANSPASOS - #######
 

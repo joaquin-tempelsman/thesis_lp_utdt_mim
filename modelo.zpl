@@ -142,16 +142,11 @@ subto no_stock_edad_neg: forall <t,c> in T*C:
 #subto edad_max_c1_c2: forall <t,e,c> in T*E*C with c != 3 and e > sell_c1_c2_before: 
 #    x[t,e,c] == 0;
 
-subto c3_bigger_or_equal_end_of_period:
-    sum <e> in E: x[0,e,3] <= sum <e> in E: x[max_periods,e,3];
 
-
-
-
-#subto c3_bigger_or_equal_end_of_period:
-#    if MANTAIN_C3_STOCK == 1 then
-#        sum <e> in E: x[0, e, 3] <= sum <e> in E: x[max_periods, e, 3]
-#    endif
+subto maintain_c3_bigger_or_equal_end_of_period:
+    if MANTAIN_C3_STOCK == 1 then
+        sum <e> in E: x[0, e, 3] <= sum <e> in E: x[max_periods, e, 3]
+    end;
 
 
 

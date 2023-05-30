@@ -393,8 +393,10 @@ def get_month_difference(start_date_ddmmyy, end_date_ddmmyy):
     #    month_difference += 1
     return month_difference
 
-def round_to_nearest(x, round_ages_to = [7, 17, 33]):
-        return min(round_ages_to, key=lambda y: abs(y - x))
+def round_to_nearest(x, round_ages_to = [7, 17, 30]):
+        rounded = min(round_ages_to, key=lambda y: abs(y - x))
+        diff = abs(rounded - x)
+        return rounded
 
 
 def get_revenue_before_eow(Log_df, periods_before_eow, PARAMS, experiment_results, experiment):
@@ -406,7 +408,7 @@ def get_revenue_before_eow(Log_df, periods_before_eow, PARAMS, experiment_result
     stock_to_quote = Log_df.loc[
         (Log_df["t"] == periods_before_eow) & (Log_df["var"] == "x")
     ]
-    stock_to_quote["age"] = stock_to_quote["age"].apply(round_to_nearest)
+    stock_to_quote["age_round"] = stock_to_quote["age"].apply(round_to_nearest)
     stock_to_quote['class'] = stock_to_quote['class'].astype(int)
 
     pfix = experiment_results[experiment]["fix_prices"]
@@ -422,14 +424,14 @@ def get_revenue_before_eow(Log_df, periods_before_eow, PARAMS, experiment_result
             stock_to_quote.loc[index, "QUOTED_STOCK"] = (
                 float(df_precios["VAQUILLONAS270"] * 0.5 * PESOS_PROMEDIO["peso_prom_vaquillonas"])
             )
-        elif row["age"] == 7:
+        elif row["age_round"] == 7:
             stock_to_quote.loc[index, "QUOTED_STOCK"] = (
                 row["value"]
                 * df_precios["NOVILLITOS300"].values[0]
                 * PARAMS["multiplicador_destete"]
                 * PESOS_PROMEDIO["peso_prom_destete"]
             )
-        elif row["age"] == 17:
+        elif row["age_round"] == 17:
             if row["class"] == 1:
                 stock_to_quote.loc[index, "QUOTED_STOCK"] = (
                     row["value"]
@@ -442,7 +444,7 @@ def get_revenue_before_eow(Log_df, periods_before_eow, PARAMS, experiment_result
                     * df_precios["VAQUILLONAS270"].values[0]
                     * PESOS_PROMEDIO["peso_prom_vaquillonas"]
                 )
-        elif row["age"] == 33:
+        elif row["age_round"] == 30:
             if row["class"] == 1:
                 stock_to_quote.loc[index, "QUOTED_STOCK"] = (
                     row["value"]
@@ -455,10 +457,13 @@ def get_revenue_before_eow(Log_df, periods_before_eow, PARAMS, experiment_result
                     * df_precios["VAQUILLONAS391"].values[0]
                     * PESOS_PROMEDIO["peso_prom_vaquillonas_pesados"]
                 )
+        else :
+            print("age not found")
 
-    stock_quoted_sum = stock_to_quote["QUOTED_STOCK"].sum()
+    # this stock cost has already been payed off in the objective function and initial stock quotation done elswere
+    sold_stock_quoted_sum = stock_to_quote["QUOTED_STOCK"].sum()
 
-    return obj_func_sum + stock_quoted_sum, stock_quoted_sum
+    return obj_func_sum + sold_stock_quoted_sum, sold_stock_quoted_sum, stock_to_quote
 
 def get_business_sales(business_sales_path, experiment, experiment_results, filter_from = '01/01/2019'):
     df_sales = pd.read_csv(business_sales_path)

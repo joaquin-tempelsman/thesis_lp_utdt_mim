@@ -22,10 +22,15 @@ costos_meses_usd_c1_c2 = {
     0: (55000 /2) / usd_18_04_2023,
     6: 55000 / usd_18_04_2023,
     17: 94000 / usd_18_04_2023,
-    21: 128000 / usd_18_04_2023,
-}
+    21: 128000 / usd_18_04_2023,}
+
+    
+
+
 costos_c3_mes = 12
-c1_c2_over_21 = 21  # pasados los 21, para clase 1 y 2, el costo diario es el maximo dado el limite sup de meses en la funcion
+c1_c2_over_21 = 10  # pasados los 21, para clase 1 y 2, el costo mensual es el equivalente a los 10 meses
+                    # dado que ya se ha pagado el primer engorde para el modelo, se incluye un sobre costo leve para el segundo engorde que llega hasta 30
+                    # en adelante donde se puede vender hasta los 36
 multiplicador_destete = 1.2  # precio venta 20% mas que el precio del novillito
 multiplicador_c3 = 0.5  # precio de venta 50% de VAQUILLONAS270
 venta_c3_from = 24 # se puede vender c3 desde los 24 en adelante
@@ -43,7 +48,7 @@ intervalos_madurez = {
     "OREJANO_HEMBRAS": [0, 5, 2],
 }
 
-indice_prenez = 0.9
+indice_prenez = 0.93
 
 SALES_PERIODS = {
     "venta_destete": VENTA_DESTETE,
@@ -74,9 +79,10 @@ PARAMS = {
     "SALES_PERIODS": SALES_PERIODS,
     "PESOS_PROMEDIO": PESOS_PROMEDIO,
     "venta_c3_from": venta_c3_from,
+    "usd_18_04_2023": usd_18_04_2023,
 }
 
-# ! WARNING, this will be regenerated out when running build_model_inputs.py
+# ! WARNING, this will be deleted and regenerated when running build_model_inputs.py
 # ! dont add other files here
 PATH_DAT_FILES = {
     "parameters": "model_inputs/parametros.dat",

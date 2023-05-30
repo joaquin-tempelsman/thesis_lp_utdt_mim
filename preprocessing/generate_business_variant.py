@@ -37,14 +37,17 @@ def business_variant(PARAMS, PESOS_PROMEDIO, path_parte_diario, path_scrapped_pr
 
     # iteramos por cada venta en el parte diario y la pesificamos usando el precio mas cercano
     # en el dataset de precios scrappeados. Obtenemos una nueva columna en df_ventas con la venta en usd para ese dia y el costo de esa venta
-    log.info(f"add cost and income to business sales")
-    df_ventas = append_daily_income_and_cost(df_ventas, df_precios, PARAMS, PESOS_PROMEDIO)
-
+    
     costs_interpolator = get_interplolator(PARAMS, output_plot_path=None)
+    
+    log.info(f"add cost and income to business sales")
+    df_ventas = append_daily_income_and_cost(df_ventas, df_precios, PARAMS, PESOS_PROMEDIO, costs_interpolator)
+
+    
 
     log.info(f"combine sales and final stock value to get final business value")
-    business_grand_total_dict = business_exercise_value(
+    business_grand_total_dict, df_final_stock_value = business_exercise_value(
         df_ventas, df_precios, PARAMS, path_parte_diario, PESOS_PROMEDIO, costs_interpolator
     )
 
-    return business_grand_total_dict
+    return business_grand_total_dict, df_ventas, df_final_stock_value

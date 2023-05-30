@@ -375,7 +375,7 @@ def costs_to_dat_test(PATH_DAT_FILES, periodos_modelo, meses_max_animales, clase
     return df_costos
 
 
-def get_interplolator(PARAMS, output_plot_path=True):
+def get_interplolator(PARAMS, output_plot_path=False):
     DataGrid = FDataGrid(
         list(PARAMS["costos_meses_usd_c1_c2"].values()),
         list(PARAMS["costos_meses_usd_c1_c2"].keys()),
@@ -386,6 +386,13 @@ def get_interplolator(PARAMS, output_plot_path=True):
         interpolation_order=3,
         monotone=True,
     )
+    monthly_cost = DataGrid.derivative()
+
+    log.info("save accumulated costs to PARAMS")
+    PARAMS['costos_meses_usd_c1_c2'][6] = monthly_cost.evaluate(eval_points=[x for x in range(7)]).sum() + (55000 / 2 ) / PARAMS['usd_18_04_2023']
+    PARAMS['costos_meses_usd_c1_c2'][17] = monthly_cost.evaluate(eval_points=[x for x in range(18)]).sum()
+    PARAMS['costos_meses_usd_c1_c2'][21] = monthly_cost.evaluate(eval_points=[x for x in range(22)]).sum()
+    log.info(PARAMS['costos_meses_usd_c1_c2'])
 
     if output_plot_path:
         fig, ax1 = plt.subplots()
@@ -396,7 +403,6 @@ def get_interplolator(PARAMS, output_plot_path=True):
 
         # Plot the monthly cost on the secondary y-axis
         ax2 = ax1.twinx()
-        monthly_cost = DataGrid.derivative()
         monthly_cost.plot(axes=ax2, label="monthly cost curve", c="C6")
         ax2.set_ylabel("monthly cost")
 
@@ -405,7 +411,7 @@ def get_interplolator(PARAMS, output_plot_path=True):
 
         fig.savefig(output_plot_path, dpi=300, bbox_inches="tight")
 
-    return DataGrid
+    return monthly_cost
 
 
 def get_month_cost(periods: list, interpolator):
@@ -664,7 +670,7 @@ def get_stock_row(parte_diario_path, FECHA_INICIO_MODELO):
     return row, df_stock_parte.columns
 
 
-def quote_stock(prices, stock_row, PESOS_PROMEDIO, costs_interpolator):
+def quote_stock(prices, stock_row, PESOS_PROMEDIO, costs_interpolator, PARAMS):
     ix = stock_row.index[0]
     stock_row = stock_row.to_dict()
     
@@ -687,19 +693,20 @@ def quote_stock(prices, stock_row, PESOS_PROMEDIO, costs_interpolator):
     NOVILLITOS_sell = int(stock_row["NOVILLITOS"][ix]) * (
         prices["NOVILLITOS300"] * PESOS_PROMEDIO["peso_prom_novillitos"]
     )
+
     TERNEROS_sell = int(stock_row["TERNEROS"][ix]) * (
-        prices["NOVILLITOS300"] * 1.2 * PESOS_PROMEDIO["peso_prom_destete"]
+        prices["NOVILLITOS300"] * PARAMS['multiplicador_destete'] * PESOS_PROMEDIO["peso_prom_destete"]
     )
     TERNERAS_sell = int(stock_row["TERNERAS"][ix]) * (
-        prices["NOVILLITOS300"] * 1.2 * PESOS_PROMEDIO["peso_prom_destete"]
+        prices["NOVILLITOS300"] * PARAMS['multiplicador_destete'] * PESOS_PROMEDIO["peso_prom_destete"]
     )
 
     # ! assumption
     OREJANO_MACHOS_sell = stock_row["OREJANO_MACHOS"][ix] * (
-        prices["NOVILLITOS300"] * 1.2 * PESOS_PROMEDIO["peso_prom_destete"]
+        prices["NOVILLITOS300"] * PARAMS['multiplicador_destete'] * PESOS_PROMEDIO["peso_prom_destete"]
     )
     OREJANO_HEMBRAS_sell = stock_row["OREJANO_HEMBRAS"][ix] * (
-        prices["NOVILLITOS300"] * 1.2 * PESOS_PROMEDIO["peso_prom_destete"] 
+        prices["NOVILLITOS300"] * PARAMS['multiplicador_destete'] * PESOS_PROMEDIO["peso_prom_destete"] 
     )
 
     # COST
@@ -707,40 +714,36 @@ def quote_stock(prices, stock_row, PESOS_PROMEDIO, costs_interpolator):
         [x for x in range(13)] + [12] * (24), costs_interpolator
     ) * int(stock_row["VACAS"][ix])
 
-    VAQ12_cost = get_month_cost(
-        [x for x in range(13)] + [12] * (14 - 12), costs_interpolator
-    ) * int(stock_row["VAQ 1-2"][ix])
+    VAQ12_cost =  PARAMS["costos_meses_usd_c1_c2"][17] * int(stock_row["VAQ 1-2"][ix])
 
-    VAQ12s_cost = get_month_cost(
-        [x for x in range(13)] + [12] * (14 - 12), costs_interpolator
-    ) * int(stock_row["VAQ. 1-2 Servicio"][ix])
+    VAQ12s_cost = PARAMS["costos_meses_usd_c1_c2"][17] * int(stock_row["VAQ. 1-2 Servicio"][ix])
 
     VAQ23_cost = get_month_cost(
         [x for x in range(13)] + [12] * (12 - 30), costs_interpolator
     ) * int(stock_row["VAQ. 2-3"][ix])
 
-    NOVILLOS_cost = get_month_cost([x for x in range(31)], costs_interpolator) * int(stock_row["NOVILLOS"][ix])
-    NOVILLITOS_cost = get_month_cost([x for x in range(19)], costs_interpolator) * int(stock_row["NOVILLITOS"][ix])
-    TERNEROS_cost = get_month_cost([x for x in range(18)], costs_interpolator) * int(stock_row["TERNEROS"][ix])
-    TERNERAS_cost = get_month_cost([x for x in range(12)], costs_interpolator) * int(stock_row["TERNERAS"][ix])
+    NOVILLOS_cost = PARAMS["costos_meses_usd_c1_c2"][21] * int(stock_row["NOVILLOS"][ix])
+    NOVILLITOS_cost = PARAMS["costos_meses_usd_c1_c2"][17] * int(stock_row["NOVILLITOS"][ix])
+    TERNEROS_cost = PARAMS["costos_meses_usd_c1_c2"][6] * int(stock_row["TERNEROS"][ix])
+    TERNERAS_cost = PARAMS["costos_meses_usd_c1_c2"][6] * int(stock_row["TERNERAS"][ix])
     OREJANO_MACHOS_cost = get_month_cost([x for x in range(6)], costs_interpolator) * int(stock_row["OREJANO_MACHOS"][ix])
     OREJANO_HEMBRAS_cost = get_month_cost([x for x in range(6)], costs_interpolator) * int(stock_row["OREJANO_HEMBRAS"][ix])
 
     categories = [
-        ("VACAS", VACAS_sell, VACAS_cost),
-        ("VAQ 1-2", VAQ12_sell, VAQ12_cost),
-        ("VAQ. 1-2 Servicio", VAQ12s_sell, VAQ12s_cost),
-        ("VAQ. 2-3", VAQ23_sell, VAQ23_cost),
-        ("NOVILLOS", NOVILLOS_sell, NOVILLOS_cost),
-        ("NOVILLITOS", NOVILLITOS_sell, NOVILLITOS_cost),
-        ("TERNEROS", TERNEROS_sell, TERNEROS_cost),
-        ("TERNERAS", TERNERAS_sell, TERNERAS_cost),
-        ("OREJANO_MACHOS", OREJANO_MACHOS_sell, OREJANO_MACHOS_cost),
-        ("OREJANO_HEMBRAS", OREJANO_HEMBRAS_sell, OREJANO_HEMBRAS_cost),
+        ("VACAS", VACAS_sell, VACAS_cost, int(stock_row["VACAS"][ix])),
+        ("VAQ 1-2", VAQ12_sell, VAQ12_cost, int(stock_row["VAQ 1-2"][ix])),
+        ("VAQ. 1-2 Servicio", VAQ12s_sell, VAQ12s_cost, int(stock_row["VAQ. 1-2 Servicio"][ix])),
+        ("VAQ. 2-3", VAQ23_sell, VAQ23_cost, int(stock_row["VAQ. 2-3"][ix])),
+        ("NOVILLOS", NOVILLOS_sell, NOVILLOS_cost, int(stock_row["NOVILLOS"][ix])),
+        ("NOVILLITOS", NOVILLITOS_sell, NOVILLITOS_cost, int(stock_row["NOVILLITOS"][ix])),
+        ("TERNEROS", TERNEROS_sell, TERNEROS_cost, int(stock_row["TERNEROS"][ix])),
+        ("TERNERAS", TERNERAS_sell, TERNERAS_cost, int(stock_row["TERNERAS"][ix])),
+        ("OREJANO_MACHOS", OREJANO_MACHOS_sell, OREJANO_MACHOS_cost, int(stock_row["OREJANO_MACHOS"][ix])),
+        ("OREJANO_HEMBRAS", OREJANO_HEMBRAS_sell, OREJANO_HEMBRAS_cost, int(stock_row["OREJANO_HEMBRAS"][ix])),
     ]
 
     df_final_stock_value = pd.DataFrame(
-        categories, columns=["cat", "sell_value", "cost"]
+        categories, columns=["cat", "sell_value", "cost", "qty"]
     )
     df_final_stock_value["revenue"] = (
         df_final_stock_value["sell_value"] - df_final_stock_value["cost"]
@@ -783,7 +786,7 @@ def business_exercise_value(
     ).to_dict()
 
     df_final_stock_value = quote_stock(
-        prices_final_period, end_stock_row, PESOS_PROMEDIO, costs_interpolator
+        prices_final_period, end_stock_row, PESOS_PROMEDIO, costs_interpolator, PARAMS
     )
 
     # get stock value + sales value grand total
@@ -803,7 +806,7 @@ def business_exercise_value(
         "grand_total": grand_total,
     }
 
-    return output_dict
+    return output_dict, df_final_stock_value
 
 
 def delete_log_files(path):

@@ -53,7 +53,7 @@ def build_LP_inputs(
         )
     else:
         log.info(f"building costs.dat realistic")
-        costs_interpolator = get_interplolator(PARAMS, output_plot_path=None)
+        costs_interpolator = get_interplolator(PARAMS, output_plot_path=False)
         costs_to_dat_realistic(costs_interpolator, PATH_DAT_FILES, PARAMS)
 
     ### PRICES ###
@@ -111,7 +111,7 @@ def build_LP_inputs(
             pd.to_datetime(PARAMS["fecha_inicio"], format="%d/%m/%Y"), df_precios
         ).to_dict()
         initial_stock_cost = quote_stock(
-            prices_initial_period, initial_stock_row, PESOS_PROMEDIO, costs_interpolator
+            prices_initial_period, initial_stock_row, PESOS_PROMEDIO, costs_interpolator, PARAMS
         )["cost"].sum()
 
         log.info(f"MODEL initial stock cost: {initial_stock_cost}")

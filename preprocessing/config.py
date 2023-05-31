@@ -18,11 +18,23 @@ peso_prom_vaquillonas_pesados = 433
 peso_prom_novillos_pesados = 438
 
 usd_18_04_2023 = 397.2
-costos_meses_usd_c1_c2 = {
-    0: (55000 /2) / usd_18_04_2023,
-    6: 55000 / usd_18_04_2023,
+
+# this points are used to build the function, then will be replaced for info
+# in dictionary costos_meses_usd_c1_c2, that has the actual function values
+# that are slightly different, and used for both variants.
+costos_meses_usd_c1_c2_pre_norm = {
+    0: (33000 /2) / usd_18_04_2023,
+    6: 33000 / usd_18_04_2023,
     17: 94000 / usd_18_04_2023,
-    21: 128000 / usd_18_04_2023,}
+    21: 128000 / usd_18_04_2023,
+}
+
+costos_meses_usd_c1_c2 = {}
+
+# 
+c3_costs = {
+    'monthly_cost_over_12': 1836 / usd_18_04_2023,
+    }
 
     
 
@@ -36,13 +48,13 @@ multiplicador_c3 = 0.5  # precio de venta 50% de VAQUILLONAS270
 venta_c3_from = 24 # se puede vender c3 desde los 24 en adelante
 
 intervalos_madurez = {
-    "VACAS": [37, 96, 3],
+    "VACAS": [36, 96, 3],
     "VAQ 1-2": [12, 17, 2],
     "VAQ. 1-2 Servicio": [12, 36, 3],
-    "VAQ. 2-3": [36, 96, 3],
-    "NOVILLOS": [25, 36, 1],
-    "NOVILLITOS": [12, 24, 1],
-    "TERNEROS": [6, 17, 1],
+    "VAQ. 2-3": [24, 48, 3],
+    "NOVILLOS": [19, 24, 1],
+    "NOVILLITOS": [12, 18, 1],
+    "TERNEROS": [6, 11, 1],
     "TERNERAS": [6, 11, 2],
     "OREJANO_MACHOS": [0, 5, 1],
     "OREJANO_HEMBRAS": [0, 5, 2],
@@ -70,6 +82,7 @@ PARAMS = {
     "clases": clases,
     "ventas_max_por_mes": ventas_max_por_mes,
     "ventas_min_por_mes": ventas_min_por_mes,
+    "costos_meses_usd_c1_c2_pre_norm": costos_meses_usd_c1_c2_pre_norm,
     "costos_meses_usd_c1_c2": costos_meses_usd_c1_c2,
     "costos_c3": costos_c3_mes,
     "c1_c2_over_21": c1_c2_over_21,
@@ -80,6 +93,7 @@ PARAMS = {
     "PESOS_PROMEDIO": PESOS_PROMEDIO,
     "venta_c3_from": venta_c3_from,
     "usd_18_04_2023": usd_18_04_2023,
+    "c3_costs": c3_costs,
 }
 
 # ! WARNING, this will be deleted and regenerated when running build_model_inputs.py

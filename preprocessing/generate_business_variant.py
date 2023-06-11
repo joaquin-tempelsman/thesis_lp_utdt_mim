@@ -50,4 +50,6 @@ def business_variant(PARAMS, PESOS_PROMEDIO, path_parte_diario, path_scrapped_pr
         df_ventas, df_precios, PARAMS, path_parte_diario, PESOS_PROMEDIO, costs_interpolator
     )
 
-    return business_grand_total_dict, df_ventas, df_final_stock_value
+    c3_qty_at_end = df_final_stock_value.loc[df_final_stock_value.cat.isin(['VACAS', 'VAQ. 1-2 Servicio', 'VAQ. 2-3'])]['qty'].sum()
+
+    return business_grand_total_dict, df_ventas, df_final_stock_value, c3_qty_at_end

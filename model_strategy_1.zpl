@@ -18,6 +18,10 @@ param sell_c1_c2_before := read "model_inputs/parametros.dat" as "2n" skip 5 use
 # demandar stock c3 inicial sea igual al stock c3 final
 param MANTAIN_C3_STOCK := read "model_inputs/parametros.dat" as "2n" skip 6 use 1;
 
+# demandar stock cierre negocio sea igual al stock c3 final
+param END_C3_STOCK_BUSINESS := read "model_inputs/parametros.dat" as "2n" skip 7 use 1;
+
+
 # meses posibles donde hay nacimientos
 set meses_agosto_si := { read "model_inputs/agosto_si.dat" as "<1n>"};
 
@@ -143,10 +147,24 @@ subto no_stock_edad_neg: forall <t,c> in T*C:
 #    x[t,e,c] == 0;
 
 
+#subto maintain_c3_bigger_or_equal_end_of_period:
+#    if MANTAIN_C3_STOCK == 1 then
+#        sum <e> in E: x[0, e, 3] <= sum <e> in E: x[max_periods, e, 3]
+#    end;
+
+
 subto maintain_c3_bigger_or_equal_end_of_period:
     if MANTAIN_C3_STOCK == 1 then
-        sum <e> in E: x[0, e, 3] <= sum <e> in E: x[max_periods, e, 3]
+        END_C3_STOCK_BUSINESS * 0.5 <= sum <e> in E: x[max_periods, e, 3]
     end;
+
+#subto maintain_c3_bigger_or_equal_end_of_period:
+#    if MANTAIN_C3_STOCK == 1 then
+#        let tolerance = END_C3_STOCK_BUSINESS * 0.1;
+#        sum <e> in E: x[max_periods, e, 3] >= END_C3_STOCK_BUSINESS - tolerance;
+#        sum <e> in E: x[max_periods, e, 3] <= END_C3_STOCK_BUSINESS + tolerance;
+#    end;
+
 
 
 

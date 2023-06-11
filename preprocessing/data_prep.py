@@ -492,6 +492,7 @@ def write_params_file(PATH_DAT_FILES, PARAMS):
         f.write(f"min_sell_qty_monthly {PARAMS['ventas_min_por_mes']}\n")
         f.write(f"sell_c1_c2_before {PARAMS['sell_c1_c2_before']}\n")
         f.write(f"mantain_stock_c3_at_end {PARAMS['mantain_c3_stock']}\n")
+        f.write(f"end_c3_stock_as {PARAMS['c3_stock_at_end']}\n")
 
     # Write August birth data to file
     with open(PATH_DAT_FILES["agosto_si"], "w") as f_yes, open(
@@ -660,6 +661,8 @@ def append_daily_income_and_cost(
 
     df_ventas["MARGIN"] = df_ventas["VENTA_VALOR"] - df_ventas["COSTO_VALOR"]
 
+    df_ventas.to_csv('test.csv')
+
     return df_ventas
 
 
@@ -818,6 +821,8 @@ def quote_stock(prices, stock_row, PESOS_PROMEDIO, costs_interpolator, PARAMS):
     df_final_stock_value["revenue"] = (
         df_final_stock_value["sell_value"] - df_final_stock_value["cost"]
     )
+    
+    df_final_stock_value['avg_cost'] = df_final_stock_value['cost'] / df_final_stock_value['qty']
 
     return df_final_stock_value
 
@@ -871,8 +876,10 @@ def business_exercise_value(
     )
 
     output_dict = {
-        "stock_value": df_final_stock_value["revenue"].sum(),
-        "sales_value": df_ventas_cut["MARGIN"].sum(),
+        "stock_cost_sum": df_final_stock_value["cost"].sum(),
+        "stock_revenue_sum": df_final_stock_value["revenue"].sum(),
+        'stock_sell_sum': df_final_stock_value["sell_value"].sum(),
+        "sales_margin": df_ventas_cut["MARGIN"].sum(),
         "grand_total": grand_total,
     }
 

@@ -28,23 +28,23 @@ ch.setLevel(logging.INFO)
 ch.setFormatter(formatter)
 log.addHandler(ch)
 
-delete_log_files("lp_logs")
+#delete_log_files("lp_logs")
 exp_grid = {
     # # variable prices - end of the world extra slack
-    '2019_24periods_12eow_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 36, 'eow': 24 , 'fecha_fin_ejercicio': '08/01/2021', 'fix_prices': False, "mantain_c3_stock": 0},
-    'm2019_24periods_12eow_real_prices' : {'fecha_inicio': '07/06/2019', 'periodos_modelo': 36, 'eow': 24  , 'fecha_fin_ejercicio': '03/06/2021', 'fix_prices': False, "mantain_c3_stock": 0},
-    '2020_24periods_12eow_real_prices' : {'fecha_inicio': '03/01/2020', 'periodos_modelo': 36, 'eow': 24 , 'fecha_fin_ejercicio': '06/01/2022', 'fix_prices': False, "mantain_c3_stock": 0},
-    '2019_36periods_12eow_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 48, 'eow': 36 , 'fecha_fin_ejercicio': '06/01/2022', 'fix_prices': False, "mantain_c3_stock": 0},
-    '2019_42periods_6eow_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 48, 'eow': 42 , 'fecha_fin_ejercicio': '02/06/2022', 'fix_prices': False, "mantain_c3_stock": 0},
-    '2019_48periods_0eow_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 48, 'eow': 48 , 'fecha_fin_ejercicio': '05/01/2023', 'fix_prices': False, "mantain_c3_stock": 0},    
+    #'2019_24periods_12eow_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 36, 'eow': 24 , 'fecha_fin_ejercicio': '08/01/2021', 'fix_prices': False, "mantain_c3_stock": 0},
+    #'m2019_24periods_12eow_real_prices' : {'fecha_inicio': '07/06/2019', 'periodos_modelo': 36, 'eow': 24  , 'fecha_fin_ejercicio': '03/06/2021', 'fix_prices': False, "mantain_c3_stock": 0},
+    #'2020_24periods_12eow_real_prices' : {'fecha_inicio': '03/01/2020', 'periodos_modelo': 36, 'eow': 24 , 'fecha_fin_ejercicio': '06/01/2022', 'fix_prices': False, "mantain_c3_stock": 0},
+    #'2019_36periods_12eow_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 48, 'eow': 36 , 'fecha_fin_ejercicio': '06/01/2022', 'fix_prices': False, "mantain_c3_stock": 0},
+    #'2019_42periods_6eow_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 48, 'eow': 42 , 'fecha_fin_ejercicio': '02/06/2022', 'fix_prices': False, "mantain_c3_stock": 0},
+    #'2019_48periods_0eow_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 48, 'eow': 48 , 'fecha_fin_ejercicio': '05/01/2023', 'fix_prices': False, "mantain_c3_stock": 0},    
     
     # variable prices - restriction to mantain c3 stock from period 0 on end
     '2019_24periods_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 24, 'fecha_fin_ejercicio': '08/01/2021', 'fix_prices': False, "mantain_c3_stock": 1},
     'm2019_24periods_real_prices' : {'fecha_inicio': '07/06/2019', 'periodos_modelo': 24, 'fecha_fin_ejercicio': '03/06/2021', 'fix_prices': False, "mantain_c3_stock": 1},
     '2020_24periods_real_prices' : {'fecha_inicio': '03/01/2020', 'periodos_modelo': 24, 'fecha_fin_ejercicio': '06/01/2022', 'fix_prices': False, "mantain_c3_stock": 1},
     '2019_36periods_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 36, 'fecha_fin_ejercicio': '06/01/2022', 'fix_prices': False, "mantain_c3_stock": 1},
-    '2019_42period_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 42, 'fecha_fin_ejercicio': '02/06/2022', 'fix_prices': False, "mantain_c3_stock": 1},
-    '2019_48period_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 48, 'fecha_fin_ejercicio': '05/01/2023', 'fix_prices': False, "mantain_c3_stock": 1},
+    #'2019_42period_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 42, 'fecha_fin_ejercicio': '02/06/2022', 'fix_prices': False, "mantain_c3_stock": 1},
+    #'2019_48period_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 48, 'fecha_fin_ejercicio': '05/01/2023', 'fix_prices': False, "mantain_c3_stock": 1},
 
     # # fix prices (non comparable to business)  - restriction to mantain c3 stock from period 0 on end
     # '2019_24periods_fix_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 24, 'fecha_fin_ejercicio': '08/01/2021', 'fix_prices': True, "mantain_c3_stock": 1},
@@ -60,10 +60,17 @@ for experiment, items in exp_grid.items():
     PARAMS["periodos_modelo"] = items["periodos_modelo"]
     PARAMS["fecha_fin_ejercicio"] = items["fecha_fin_ejercicio"]
     PARAMS["mantain_c3_stock"] = items["mantain_c3_stock"]
-    
-    if PARAMS["mantain_c3_stock"] == 1:
-        pass
 
+ # generate business variant run
+    business_excercise, df_ventas, df_final_stock_value, PARAMS['c3_stock_at_end'] = business_variant(
+        PARAMS, PESOS_PROMEDIO, path_parte_diario, path_scrapped_prices_df
+    )
+    exp_grid[experiment]["business_results"] = business_excercise
+    df_final_stock_value.to_csv(f"lp_logs/df_final_stock_value_{experiment}.csv")
+
+    log.info(f"{PARAMS['c3_stock_at_end']}")
+
+    # generate LP inputs
     (
         exp_grid[experiment]["lp_stock_history_cost"],
         df_precios,
@@ -81,19 +88,14 @@ for experiment, items in exp_grid.items():
 
     #run LP
     os.system(
-       f"sudo docker exec scipTeach2 scip -f modelo.zpl -l lp_logs/{experiment}.log"
+       f"sudo docker exec scipTeach2 scip -f model_strategy_1.zpl -l lp_logs/{experiment}.log"
     )
-
-    # compare with business variant data
-    business_excercise, df_ventas, df_final_stock_value = business_variant(
-        PARAMS, PESOS_PROMEDIO, path_parte_diario, path_scrapped_prices_df
-    )
-    exp_grid[experiment]["business_results"] = business_excercise
-    df_final_stock_value.to_csv(f"lp_logs/df_final_stock_value_{experiment}.csv")
 
     # ! required by explore_results.ipynb
     pfix = items['fix_prices']
     df_precios.to_csv(f"lp_logs/df_precios_fix{pfix}.csv")
+
+    PARAMS['c3_stock_at_end'] = int(PARAMS['c3_stock_at_end'])
 
 
 log.info("saving experiment results at lp_logs/experiments_results.json")

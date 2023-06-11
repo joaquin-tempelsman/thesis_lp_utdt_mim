@@ -60,6 +60,19 @@ intervalos_madurez = {
     "OREJANO_HEMBRAS": [0, 5, 2],
 }
 
+intervalos_madurez = {
+    "VACAS": [60, 61, 3],
+    "VAQ 1-2": [17, 18, 2],
+    "VAQ. 1-2 Servicio": [30, 30, 3],
+    "VAQ. 2-3": [36, 37, 3],
+    "NOVILLOS": [21, 22, 1],
+    "NOVILLITOS": [17, 18, 1],
+    "TERNEROS": [6, 7, 1],
+    "TERNERAS": [6, 7, 2],
+    "OREJANO_MACHOS": [6, 7, 1],
+    "OREJANO_HEMBRAS": [6, 7, 2],
+}
+
 indice_prenez = 0.93
 
 SALES_PERIODS = {

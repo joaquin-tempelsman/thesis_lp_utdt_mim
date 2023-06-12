@@ -212,13 +212,13 @@ set ventaetapa23 := {16, 17, 18, 30, 31, 32, 33, 34, 35, 36};
 # 30% venta al destete
 subto ventas_heuristica_1: forall <t,c> in meses_agosto_si*C:
     if t + 6 <= max_periods then
-        n[t,2] * 0.3 == sum <v> in ventaetapa1 with t+v < max_periods: Y[t+v,v,c]
+        n[t,2] * 0.3 == sum <v> in ventaetapa1 with t+v <= max_periods: Y[t+v,v,c]
     end;
 
 # 30% en 1er o 2do engorde
 subto ventas_heuristica_2: forall <t,c> in meses_agosto_si*C:
     if t + 16 <= max_periods then
-        n[t,2] * 0.3 == sum <v> in ventaetapa23 with t+v < max_periods: Y[t+v,v,c]
+        n[t,2] * 0.3 == sum <v> in ventaetapa23 with t+v <= max_periods: Y[t+v,v,c]
     end;
 
 # 40% de los nacimientos a clase reproductora

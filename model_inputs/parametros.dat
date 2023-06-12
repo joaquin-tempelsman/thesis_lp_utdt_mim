@@ -1,7 +1,8 @@
 model params
-max_periods 48
+max_periods 36
 max_age_allowed 120
 max_sell_qty_monthly 100
 min_sell_qty_monthly 10
 sell_c1_c2_before 37
 mantain_stock_c3_at_end 1
+end_c3_stock_as 587

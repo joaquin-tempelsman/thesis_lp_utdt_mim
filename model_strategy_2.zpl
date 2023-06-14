@@ -153,10 +153,10 @@ subto no_stock_edad_neg: forall <t,c> in T*C:
 #    end;
 
 
-subto maintain_c3_bigger_or_equal_end_of_period:
-    if MANTAIN_C3_STOCK == 1 then
-        END_C3_STOCK_BUSINESS * 0.5 <= sum <e> in E: x[max_periods, e, 3]
-    end;
+#subto maintain_c3_bigger_or_equal_end_of_period:
+#    if MANTAIN_C3_STOCK == 1 then
+#        END_C3_STOCK_BUSINESS * 0.5 <= sum <e> in E: x[max_periods, e, 3]
+#    end;
 
 #subto maintain_c3_bigger_or_equal_end_of_period:
 #    if MANTAIN_C3_STOCK == 1 then
@@ -209,17 +209,25 @@ subto limite_nacimientos_c3: forall <t> in T:
 set ventaetapa1 := { 6, 7, 8};
 set ventaetapa23 := {16, 17, 18, 30, 31, 32, 33, 34, 35, 36};
 
+# Variable binaria de que permite que haya ventas cuando no hay nacimientos
+# para las restricciones ventas_heuristica_1 y ventas_heuristica_2 
+var k[T] binary;
+
+# Variable binaria que permite que haya traspasos cuando no hay nacimientos
+# para la restriccion traspasos_heuristica_3
+var l[T] binary;
+
 # 30% venta al destete
-subto ventas_heuristica_1: forall <t,c> in meses_agosto_si*C with t + 6 <= max_periods:
-    n[t,2] * 0.3 == sum <v> in ventaetapa1 with t+v <= max_periods: Y[t+v,v,c];
+subto ventas_heuristica_1: forall <t> in meses_agosto_si with t + 6 <= max_periods:
+    n[t,2] * 0.3  == sum <v> in ventaetapa1 with t+v <= max_periods: y[t+v,v,2] * k[t];
 
 # 30% en 1er o 2do engorde
-subto ventas_heuristica_2: forall <t,c> in meses_agosto_si*C with t + 16 <= max_periods:
-        n[t,2] * 0.3 == sum <v> in ventaetapa23 with t+v <= max_periods: Y[t+v,v,c];
+subto ventas_heuristica_2: forall <t> in meses_agosto_si with t + 16 <= max_periods:
+    n[t,2] * 0.3 == sum <v> in ventaetapa23 with t+v <= max_periods: y[t+v,v,2] * k[t];
 
 # 40% de los nacimientos a clase reproductora
-subto ventas_heuristica_3: forall <t> in meses_agosto_si with t + 11 <= max_periods:
-        n[t,2] * 0.4 == w[t+11,11];
+subto traspasos_heuristica_3: forall <t> in meses_agosto_si with t + 11 <= max_periods:
+        n[t,2] * 0.4 == w[t+11,11] * l[t];
 
 
 

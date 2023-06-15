@@ -1,23 +1,9 @@
 1)
 ver diferencia de precio mayor a 15 dias warnings
 
-2)
-sin solucion si stock inicial c1 c2 de 20 semanas o mas
-es mayor a 0
-
 step 1 modif periodos_venta_no_posible_c1_c2 > puedo vender en el ultimo periodo
 step 2 remove restriccion y que se maneje con precio 0 > el modelo no rompe nunca para c1 c2
 step 3 detecto problema si hay stock init c3 de 24 meses
-
-## solucionado!, agosto_si tenia un 0, removemos.
-
-##### experiento 2019-2023
-
-precios scrapped desde = 31/01/2014,10/02/2014
-precios scrapped hasta = 31/05/2022,10/06/2022
-
-ventas  from enero 18 2019 00:00:00 
-ventas to enero 12 2023 00:00:00
 
 - y los nacimientos?, estan informados en el parte diario. Se inputan a la vez en nacimientos 10 y 6 orejano macho 4 orejano HEMBRAS
 por lo que lo estamos cuantificando
@@ -26,5 +12,17 @@ por lo que lo estamos cuantificando
 idea: pensar que la idea es construir una SN y comparar en segundo lugar vs negocio de la forma
 mas realista posible con los supuestos en su lugar. el fin no es el experimento con 100% de comparabilidad
 en si sino la solucion
+
+###################
+
+proximos pasos:
+
+correr modelo_heuristica con distintas configuraciones
+    armar un run_experiment_2 (nueva branch? intentemos que no)
+correr modelo_libre requiriendo llegar al fin del periodo con la misma cantidad de stock c3
+    esto va a requerir parsear el log, obtener stock a final del periodo y armar restriccion
+comparar funcion objetivo
+    ver diferencias en estrategias
+    ver impacto porcentual
 
 

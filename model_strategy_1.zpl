@@ -147,24 +147,10 @@ subto no_stock_edad_neg: forall <t,c> in T*C:
 #    x[t,e,c] == 0;
 
 
-#subto maintain_c3_bigger_or_equal_end_of_period:
-#    if MANTAIN_C3_STOCK == 1 then
-#        sum <e> in E: x[0, e, 3] <= sum <e> in E: x[max_periods, e, 3]
-#    end;
-
-
 subto maintain_c3_bigger_or_equal_end_of_period:
     if MANTAIN_C3_STOCK == 1 then
-        END_C3_STOCK_BUSINESS * 0.5 <= sum <e> in E: x[max_periods, e, 3]
+        sum <e> in E: x[0, e, 3] <= sum <e> in E: x[max_periods, e, 3]
     end;
-
-#subto maintain_c3_bigger_or_equal_end_of_period:
-#    if MANTAIN_C3_STOCK == 1 then
-#        let tolerance = END_C3_STOCK_BUSINESS * 0.1;
-#        sum <e> in E: x[max_periods, e, 3] >= END_C3_STOCK_BUSINESS - tolerance;
-#        sum <e> in E: x[max_periods, e, 3] <= END_C3_STOCK_BUSINESS + tolerance;
-#    end;
-
 
 
 
@@ -204,7 +190,11 @@ subto limite_nacimientos_c3: forall <t> in T:
 
 
 
-####### - CODIGO BORRADOR - #######
 
-#subto nacimientos_c2b: forall <t,e> in T*E with t in semanas_agosto:
-#    n[t,2]   == floor( x[t,e,3] * 0.95 / 2 );
+
+
+
+
+
+
+

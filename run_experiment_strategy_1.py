@@ -39,10 +39,10 @@ exp_grid = {
     #'2019_48periods_0eow_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 48, 'eow': 48 , 'fecha_fin_ejercicio': '05/01/2023', 'fix_prices': False, "mantain_c3_stock": 0},    
     
     # variable prices - restriction to mantain c3 stock from period 0 on end
-    '2019_24periods_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 24, 'fecha_fin_ejercicio': '08/01/2021', 'fix_prices': False, "mantain_c3_stock": 1},
-    'm2019_24periods_real_prices' : {'fecha_inicio': '07/06/2019', 'periodos_modelo': 24, 'fecha_fin_ejercicio': '03/06/2021', 'fix_prices': False, "mantain_c3_stock": 1},
-    '2020_24periods_real_prices' : {'fecha_inicio': '03/01/2020', 'periodos_modelo': 24, 'fecha_fin_ejercicio': '06/01/2022', 'fix_prices': False, "mantain_c3_stock": 1},
-    '2019_36periods_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 36, 'fecha_fin_ejercicio': '06/01/2022', 'fix_prices': False, "mantain_c3_stock": 1},
+    #'2019_24periods_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 24, 'fecha_fin_ejercicio': '08/01/2021', 'fix_prices': False, "mantain_c3_stock": 1},
+    #'m2019_24periods_real_prices' : {'fecha_inicio': '07/06/2019', 'periodos_modelo': 24, 'fecha_fin_ejercicio': '03/06/2021', 'fix_prices': False, "mantain_c3_stock": 1},
+    #'2020_24periods_real_prices' : {'fecha_inicio': '03/01/2020', 'periodos_modelo': 24, 'fecha_fin_ejercicio': '06/01/2022', 'fix_prices': False, "mantain_c3_stock": 1},
+    #'2019_36periods_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 36, 'fecha_fin_ejercicio': '06/01/2022', 'fix_prices': False, "mantain_c3_stock": 1},
     #'2019_42period_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 42, 'fecha_fin_ejercicio': '02/06/2022', 'fix_prices': False, "mantain_c3_stock": 1},
     #'2019_48period_real_prices' : {'fecha_inicio': '18/01/2019', 'periodos_modelo': 48, 'fecha_fin_ejercicio': '05/01/2023', 'fix_prices': False, "mantain_c3_stock": 1},
 
